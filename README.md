@@ -3,7 +3,7 @@
 <b>Programming language:</b> JAVA <br />
 <b>In order to:</b> Final project regarding subject "Parallel and Distributed Processing" <br />
 
-## Table of Contents:
+## Table of Contents
 1. [Description](https://github.com/niesuch/bittorrentclient/blob/master/README.md#description)
 2. [About program](https://github.com/niesuch/bittorrentclient/blob/master/README.md#about-program)
 3. [Design Assumptions](https://github.com/niesuch/bittorrentclient/blob/master/README.md#desing-assumptions)
@@ -32,10 +32,10 @@
 
 ## Installation
 
-## Changelogs:
+## Changelogs
 Click on this link to see changelogs: [CHANGELOG](https://github.com/niesuch/bittorrentclient/releases)
 
-## Copyright and license:
+## Copyright and license
 Copyright 2015. Code released under the [MIT license](https://github.com/niesuch/bittorrentclient/blob/master/LICENSE.md).
 
 [Back to top](https://github.com/niesuch/bittorrentclient/blob/master/README.md#bittorrent-client)
