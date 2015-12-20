@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 public class Bittorrent extends JPanel implements ActionListener {
 
-    private JPanel _infoPanel;
+    private final JPanel _infoPanel;
     private static final int _WIDTH = 800;
     private static final int _HEIGHT = 600;
 
@@ -94,19 +94,24 @@ public class Bittorrent extends JPanel implements ActionListener {
         if (chooser == JFileChooser.APPROVE_OPTION) {
             return fc.getSelectedFile().getAbsolutePath();
         }
-        
+
         return null;
     }
 
     public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
 
-        if ("ABOUT".equals(cmd)) {
-            _showAboutDialog();
-        } else if ("OPEN".equals(cmd)) {
-            _openFileChooser();
-        } else if ("EXIT".equals(cmd)) {
-            System.exit(0);
+        if (null != cmd) {
+            switch (cmd) {
+                case "ABOUT":
+                    _showAboutDialog();
+                    break;
+                case "OPEN":
+                    _openFileChooser();
+                    break;
+                case "EXIT":
+                    System.exit(0);
+            }
         }
     }
 
