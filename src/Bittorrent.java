@@ -1,138 +1,219 @@
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
-import javax.swing.ImageIcon;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.Observable;
+import java.util.Observer;
+
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
-public final class Bittorrent extends JPanel implements ActionListener {
+public class Bittorrent extends JFrame implements Observer {
 
-    private final JPanel _infoPanel;
+    private final DownloadsTableModel _tableModel = new DownloadsTableModel();
+    private final JTable _table;
+    private final JButton _pauseButton = new JButton("Pause");
+    private final JButton _resumeButton = new JButton("Resume");
+    private final JButton _cancelButton, _deleteButton;
+    private Download _selectedDownload;
     private static final int _WIDTH = 800;
     private static final int _HEIGHT = 600;
-    private static final String[] buttons = {"Start", "Stop", "Pause", "Delete"};
 
     public Bittorrent() {
-        super(new BorderLayout());
+        setTitle("BitTorrent");
+        setSize(_WIDTH, _HEIGHT);
 
-        JToolBar toolBar = new JToolBar("Toolbar", JToolBar.VERTICAL);
-        _addButtons(toolBar, buttons);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            System.err.println("Error loading the appearance of window");
-        }
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_F);
 
-        JButton stopButton = new JButton("Cancel");
-        stopButton.setActionCommand("CANCEL");
-        stopButton.addActionListener(this);
+        JMenuItem fileOpenMenuItem = new JMenuItem("Open", KeyEvent.VK_X);
 
-        JButton startButton = new JButton("Start");
-        startButton.setActionCommand("START");
-        startButton.addActionListener(this);
+        fileOpenMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _openFileChooser();
+            }
+        });
 
-        JButton pauseButton = new JButton("Pause");
-        pauseButton.setActionCommand("PAUSE");
-        pauseButton.addActionListener(this);
-        
-        JButton deleteButton = new JButton("Delete");
-        deleteButton.setActionCommand("DELETE");
-        deleteButton.addActionListener(this);
+        JMenuItem fileExitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
 
-        JMenuBar menubar = new JMenuBar();
-        JMenu menuBittorrentOption = new JMenu("Help");
-        JMenu menuFileOption = new JMenu("File");
-        menubar.add(menuFileOption);
-        menubar.add(menuBittorrentOption);
+        fileExitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
 
-        JMenuItem about = new JMenuItem("About");
-        about.setActionCommand("ABOUT");
-        about.addActionListener(this);
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_F);
 
-        JMenuItem openFile = new JMenuItem("Open");
-        openFile.setActionCommand("OPEN");
-        openFile.addActionListener(this);
+        JMenuItem helpAboutMenuItem = new JMenuItem("About", KeyEvent.VK_X);
 
-        JMenuItem exitApp = new JMenuItem("Exit");
-        exitApp.setActionCommand("EXIT");
-        exitApp.addActionListener(this);
+        helpAboutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _showAboutDialog();
+            }
+        });
 
-        menuBittorrentOption.add(about);
-        menuFileOption.add(openFile);
-        menuFileOption.add(exitApp);
+        fileMenu.add(fileOpenMenuItem);
+        fileMenu.add(fileExitMenuItem);
+        helpMenu.add(helpAboutMenuItem);
 
-        _infoPanel = new JPanel();
-        JPanel ip = new JPanel(new GridLayout(0, 3));
-        ip.add(new JLabel("Name"));
-        ip.add(new JLabel("Size"));
-        ip.add(new JLabel("% downloaded"));
-        _infoPanel.add(ip);
-        _infoPanel.setPreferredSize(new Dimension(_WIDTH, 50));
+        menuBar.add(fileMenu);
+        menuBar.add(helpMenu);
+        setJMenuBar(menuBar);
 
-        setPreferredSize(new Dimension(_WIDTH, _HEIGHT));
-        add(menubar, BorderLayout.NORTH);
-        add(_infoPanel, BorderLayout.SOUTH);
-        add(toolBar, BorderLayout.EAST);
+        _table = new JTable(_tableModel);
+        _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        ProgressRenderer renderer = new ProgressRenderer(0, 100);
+        renderer.setStringPainted(true);
+        _table.setDefaultRenderer(JProgressBar.class, renderer);
+        _table.setRowHeight((int) renderer.getPreferredSize().getHeight());
+
+        JPanel downloadsPanel = new JPanel();
+        downloadsPanel.setBorder(BorderFactory.createTitledBorder("Downloads"));
+        downloadsPanel.setLayout(new BorderLayout());
+        downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
+
+        JPanel buttonsPanel = new JPanel();
+        _pauseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _actionPause();
+            }
+        });
+        _pauseButton.setEnabled(false);
+        buttonsPanel.add(_pauseButton);
+
+        _resumeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _actionResume();
+            }
+        });
+        _resumeButton.setEnabled(false);
+        buttonsPanel.add(_resumeButton);
+
+        _cancelButton = new JButton("Cancel");
+        _cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _actionCancel();
+            }
+        });
+        _cancelButton.setEnabled(false);
+        buttonsPanel.add(_cancelButton);
+
+        _deleteButton = new JButton("Delete");
+        _deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                _actionDelete();
+            }
+        });
+        _deleteButton.setEnabled(false);
+        buttonsPanel.add(_deleteButton);
+
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(downloadsPanel, BorderLayout.CENTER);
+        getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
     }
 
     /**
-     * Function adding all buttons from array
-     * @param toolBar
-     * @param buttons 
+     * Pause action for button
      */
-    private void _addButtons(JToolBar toolBar, String[] buttons) {
-        for (String element : buttons) {
-            JButton button = _makeButton(element);
-            toolBar.add(button);
-        }
+    private void _actionPause() {
+
     }
 
     /**
-     * Function to make buttons
-     * @param name
-     * @return 
+     * Resume action for button
      */
-    private JButton _makeButton(String name) {
-        String imgLocation = "images/icons/" + name + ".png";
-        URL imageURL = Bittorrent.class.getResource(imgLocation);
-        JButton button = new JButton();
-        button.addActionListener(this);
+    private void _actionResume() {
 
-        if (imageURL != null) {
-            button.setIcon(new ImageIcon(imageURL, name));
+    }
+
+    /**
+     * Cancel action for button
+     */
+    private void _actionCancel() {
+
+    }
+    
+    /**
+     * Delete action for button
+     */
+    private void _actionDelete() {
+
+    }
+
+    /**
+     * Function to update buttons views
+     */
+    private void updateButtons() {
+        if (_selectedDownload != null) {
+            int status = _selectedDownload.getStatus();
+            switch (status) {
+                case Download.DOWNLOADING:
+                    _pauseButton.setEnabled(true);
+                    _resumeButton.setEnabled(false);
+                    _cancelButton.setEnabled(true);
+                    _deleteButton.setEnabled(false);
+                    break;
+                case Download.PAUSED:
+                    _pauseButton.setEnabled(false);
+                    _resumeButton.setEnabled(true);
+                    _cancelButton.setEnabled(true);
+                    _deleteButton.setEnabled(false);
+                    break;
+                case Download.ERROR:
+                    _pauseButton.setEnabled(false);
+                    _resumeButton.setEnabled(true);
+                    _cancelButton.setEnabled(false);
+                    _deleteButton.setEnabled(true);
+                    break;
+                default:
+                    _pauseButton.setEnabled(false);
+                    _resumeButton.setEnabled(false);
+                    _cancelButton.setEnabled(false);
+                    _deleteButton.setEnabled(true);
+            }
         } else {
-            button.setText(name);
+            _pauseButton.setEnabled(false);
+            _resumeButton.setEnabled(false);
+            _cancelButton.setEnabled(false);
+            _deleteButton.setEnabled(false);
         }
-
-        return button;
     }
 
-    /**
-     * Function to show application GUI
-     */
-    private static void _showGUI() {
-        JFrame frame = new JFrame("BitTorrent");
-
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(new Bittorrent());
-        frame.pack();
-        frame.setVisible(true);
+    @Override
+    public void update(Observable o, Object arg) {
+        updateButtons();
     }
 
     /**
@@ -146,7 +227,8 @@ public final class Bittorrent extends JPanel implements ActionListener {
                 + "\n- Grzebuła Łukasz"
                 + "\n- Kolek Robert"
                 + "\n- Niesłuchowski Kamil"
-                + "\n- Puszczyński Paweł";
+                + "\n- Puszczyński Paweł"
+                + "\n\nApplication version: 1.0";
 
         final JOptionPane pane = new JOptionPane(authors);
         final JDialog dialog = pane.createDialog((JFrame) null, "About");
@@ -169,34 +251,8 @@ public final class Bittorrent extends JPanel implements ActionListener {
         return null;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        String cmd = e.getActionCommand();
-
-        if (null != cmd) {
-            switch (cmd) {
-                case "ABOUT":
-                    _showAboutDialog();
-                    break;
-                case "OPEN":
-                    _openFileChooser();
-                    break;
-                case "EXIT":
-                    System.exit(0);
-                case "START":
-                    break;
-                case "STOP":
-                    break;
-                case "PAUSE":
-                    break;
-                case "DELETE":
-                    break;
-            }
-        }
-    }
-
     public static void main(String[] args) {
-        _showGUI();
+        Bittorrent bittorrent = new Bittorrent();
+        bittorrent.setVisible(true);
     }
-
 }
