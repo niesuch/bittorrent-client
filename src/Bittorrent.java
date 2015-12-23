@@ -23,7 +23,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-public class Bittorrent extends JFrame implements Observer {
+public class Bittorrent extends JFrame implements Observer
+{
 
     private final DownloadsTableModel _tableModel = new DownloadsTableModel();
     private final JTable _table;
@@ -34,13 +35,16 @@ public class Bittorrent extends JFrame implements Observer {
     private static final int _WIDTH = 800;
     private static final int _HEIGHT = 600;
 
-    public Bittorrent() {
+    public Bittorrent()
+    {
         setTitle("BitTorrent");
         setSize(_WIDTH, _HEIGHT);
 
-        addWindowListener(new WindowAdapter() {
+        addWindowListener(new WindowAdapter()
+        {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(WindowEvent e)
+            {
                 System.exit(0);
             }
         });
@@ -51,18 +55,22 @@ public class Bittorrent extends JFrame implements Observer {
 
         JMenuItem fileOpenMenuItem = new JMenuItem("Open", KeyEvent.VK_X);
 
-        fileOpenMenuItem.addActionListener(new ActionListener() {
+        fileOpenMenuItem.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 _openFileChooser();
             }
         });
 
         JMenuItem fileExitMenuItem = new JMenuItem("Exit", KeyEvent.VK_X);
 
-        fileExitMenuItem.addActionListener(new ActionListener() {
+        fileExitMenuItem.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 System.exit(0);
             }
         });
@@ -72,9 +80,11 @@ public class Bittorrent extends JFrame implements Observer {
 
         JMenuItem helpAboutMenuItem = new JMenuItem("About", KeyEvent.VK_X);
 
-        helpAboutMenuItem.addActionListener(new ActionListener() {
+        helpAboutMenuItem.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 _showAboutDialog();
             }
         });
@@ -101,18 +111,22 @@ public class Bittorrent extends JFrame implements Observer {
         downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();
-        _pauseButton.addActionListener(new ActionListener() {
+        _pauseButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 _actionPause();
             }
         });
         _pauseButton.setEnabled(false);
         buttonsPanel.add(_pauseButton);
 
-        _resumeButton.addActionListener(new ActionListener() {
+        _resumeButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 _actionResume();
             }
         });
@@ -120,9 +134,11 @@ public class Bittorrent extends JFrame implements Observer {
         buttonsPanel.add(_resumeButton);
 
         _cancelButton = new JButton("Cancel");
-        _cancelButton.addActionListener(new ActionListener() {
+        _cancelButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 _actionCancel();
             }
         });
@@ -130,9 +146,11 @@ public class Bittorrent extends JFrame implements Observer {
         buttonsPanel.add(_cancelButton);
 
         _deleteButton = new JButton("Delete");
-        _deleteButton.addActionListener(new ActionListener() {
+        _deleteButton.addActionListener(new ActionListener()
+        {
             @Override
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent e)
+            {
                 _actionDelete();
             }
         });
@@ -147,38 +165,45 @@ public class Bittorrent extends JFrame implements Observer {
     /**
      * Pause action for button
      */
-    private void _actionPause() {
+    private void _actionPause()
+    {
 
     }
 
     /**
      * Resume action for button
      */
-    private void _actionResume() {
+    private void _actionResume()
+    {
 
     }
 
     /**
      * Cancel action for button
      */
-    private void _actionCancel() {
+    private void _actionCancel()
+    {
 
     }
-    
+
     /**
      * Delete action for button
      */
-    private void _actionDelete() {
+    private void _actionDelete()
+    {
 
     }
 
     /**
      * Function to update buttons views
      */
-    private void updateButtons() {
-        if (_selectedDownload != null) {
+    private void updateButtons()
+    {
+        if (_selectedDownload != null)
+        {
             int status = _selectedDownload.getStatus();
-            switch (status) {
+            switch (status)
+            {
                 case Download.DOWNLOADING:
                     _pauseButton.setEnabled(true);
                     _resumeButton.setEnabled(false);
@@ -203,7 +228,8 @@ public class Bittorrent extends JFrame implements Observer {
                     _cancelButton.setEnabled(false);
                     _deleteButton.setEnabled(true);
             }
-        } else {
+        } else
+        {
             _pauseButton.setEnabled(false);
             _resumeButton.setEnabled(false);
             _cancelButton.setEnabled(false);
@@ -212,14 +238,16 @@ public class Bittorrent extends JFrame implements Observer {
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable o, Object arg)
+    {
         updateButtons();
     }
 
     /**
      * Function to show dialog about authors
      */
-    private static void _showAboutDialog() {
+    private static void _showAboutDialog()
+    {
         String authors = "GitHub:"
                 + "\nhttps://github.com/niesuch/bittorrentclient"
                 + "\n\nAuthors:"
@@ -240,18 +268,21 @@ public class Bittorrent extends JFrame implements Observer {
      *
      * @return
      */
-    private String _openFileChooser() {
+    private String _openFileChooser()
+    {
         JFileChooser fc = new JFileChooser();
         int chooser = fc.showOpenDialog(this);
 
-        if (chooser == JFileChooser.APPROVE_OPTION) {
+        if (chooser == JFileChooser.APPROVE_OPTION)
+        {
             return fc.getSelectedFile().getAbsolutePath();
         }
 
         return null;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         Bittorrent bittorrent = new Bittorrent();
         bittorrent.setVisible(true);
     }

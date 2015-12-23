@@ -4,40 +4,53 @@ import java.util.Observer;
 import javax.swing.JProgressBar;
 import javax.swing.table.AbstractTableModel;
 
-class DownloadsTableModel extends AbstractTableModel implements Observer {
+class DownloadsTableModel extends AbstractTableModel implements Observer
+{
 
-    private static final String[] _columnNames = {"Name", "Size", "% downloaded", "Status"};
+    private static final String[] _columnNames =
+    {
+        "Name", "Size", "% downloaded", "Status"
+    };
 
-    private static final Class[] _columnClasses = {String.class, String.class, JProgressBar.class,
-        String.class};
+    private static final Class[] _columnClasses =
+    {
+        String.class, String.class, JProgressBar.class,
+        String.class
+    };
 
     @Override
-    public int getColumnCount() {
+    public int getColumnCount()
+    {
         return _columnNames.length;
     }
 
     @Override
-    public String getColumnName(int col) {
+    public String getColumnName(int col)
+    {
         return _columnNames[col];
     }
 
     @Override
-    public Class getColumnClass(int col) {
+    public Class getColumnClass(int col)
+    {
         return _columnClasses[col];
     }
 
     @Override
-    public int getRowCount() {
+    public int getRowCount()
+    {
         return 0;
     }
 
     @Override
-    public Object getValueAt(int row, int col) {
+    public Object getValueAt(int row, int col)
+    {
         return null;
     }
 
     @Override
-    public void update(Observable o, Object arg) {
+    public void update(Observable o, Object arg)
+    {
 
     }
 }

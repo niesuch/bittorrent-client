@@ -1,6 +1,11 @@
-class Download {
 
-    public static final String STATUSES[] = {"Downloading", "Paused", "Complete", "Cancelled", "Error"};
+class Download
+{
+
+    public static final String STATUSES[] =
+    {
+        "Downloading", "Paused", "Complete", "Cancelled", "Error"
+    };
     public static final int DOWNLOADING = 0;
     public static final int PAUSED = 1;
     public static final int COMPLETE = 2;
@@ -10,31 +15,38 @@ class Download {
     private int _downloaded;
     private int _status;
 
-    public int getSize() {
+    public int getSize()
+    {
         return _size;
     }
 
-    public float getProgress() {
+    public float getProgress()
+    {
         return ((float) _downloaded / _size) * 100;
     }
 
-    public int getStatus() {
+    public int getStatus()
+    {
         return _status;
     }
 
-    public void pause() {
+    public void pause()
+    {
         _status = PAUSED;
     }
 
-    public void resume() {
+    public void resume()
+    {
         _status = DOWNLOADING;
     }
 
-    public void cancel() {
+    public void cancel()
+    {
         _status = CANCELLED;
     }
 
-    private void error() {
+    private void error()
+    {
         _status = ERROR;
     }
 }
