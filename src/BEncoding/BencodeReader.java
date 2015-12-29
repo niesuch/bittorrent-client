@@ -3,7 +3,9 @@ package BEncoding;
 import BEncoding.BElement.*;
 import BEncoding.BElement.BList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Class used for decoding Bencoding.
@@ -17,16 +19,20 @@ public class BencodeReader
      */
     public static BElement[] Decode(String bencodedString)
     {
-            int index = 0;
+            AtomicInteger index = new AtomicInteger(0);
 
             try
             {
                     if (bencodedString == null) return null;
 
                     List<BElement> rootElements = new ArrayList<BElement>();
-                    while (bencodedString.length() > index)
+                    int bencodedStringLength = bencodedString.length();
+                    while (bencodedStringLength > index.get())
                     {
-                            rootElements.add(ReadElement(bencodedString, index));
+                        rootElements.add(ReadElement(bencodedString, index));
+                        System.out.println("current index:" + index.toString());
+                        System.out.println("current length:" + bencodedString.length());
+                        
                     }
                     //TODO not sure if this works correctly, check this later
                     BElement[] ret = new BElement[rootElements.size()];
@@ -39,9 +45,9 @@ public class BencodeReader
             }
     }
     
-    private static BElement ReadElement(String bencodedString, int index)
+    private static BElement ReadElement(String bencodedString, AtomicInteger index)
     {
-            char ElementType = bencodedString.charAt(index);
+            char ElementType = bencodedString.charAt(index.get());
             switch (ElementType)
             {
                     case '0':
@@ -66,38 +72,38 @@ public class BencodeReader
             }
     }
     
-    private static BDictionary ReadDictionary(String bencodedString,int index)
+    private static BDictionary ReadDictionary(String bencodedString,AtomicInteger index)
     {
-            index++;
-            BDictionary dict = new BDictionary();
+        index.incrementAndGet();
+        BDictionary dict = new BDictionary();
 
-            try
-            {
-                    while (bencodedString.charAt(index) != 'e')
-                    {
-                            BString Key = ReadString(bencodedString, index);
-                            BElement Value = ReadElement(bencodedString, index);
-                            dict.Add(Key, Value);
-                    }
-            }
-            catch (Exception ex)
-            { 
-                System.err.println("Caught Exception in BencodeReader, ReadList: " + ex.getMessage());
-                return null;  
-            }
+        try
+        {
+                while (bencodedString.charAt(index.get()) != 'e')
+                {
+                        BString Key = ReadString(bencodedString, index);
+                        BElement Value = ReadElement(bencodedString, index);
+                        dict.Add(Key, Value);
+                }
+        }
+        catch (Exception ex)
+        { 
+            System.err.println("Caught Exception in BencodeReader, ReadDictionary: " + ex.getMessage());
+            return null;  
+        }
 
-            index++;
-            return dict;
+        index.incrementAndGet();
+        return dict;
     }
 
-    private static BList ReadList(String bencodedString, int index)
+    private static BList ReadList(String bencodedString, AtomicInteger index)
     {
-            index++;
+            index.incrementAndGet();
             BList lst = new BList();
 
             try
             {
-                while (bencodedString.charAt(index) != 'e')
+                while (bencodedString.charAt(index.get()) != 'e')
                 {
                     lst.Add(ReadElement(bencodedString, index));
                 }
@@ -108,17 +114,17 @@ public class BencodeReader
                 return null; 
             }
 
-            index++;
+            index.incrementAndGet();
             return lst;
     }
 
     //TODO
     //cant pass by reference in java need to find way around this later
-    private static BInteger ReadInteger(String bencodedString,/*this shold be reference*/ int index)
+    private static BInteger ReadInteger(String bencodedString,/*this shold be reference*/ AtomicInteger index)
     {
-        index++;
+        index.incrementAndGet();
 
-        int end = bencodedString.indexOf('e', index);
+        int end = bencodedString.indexOf('e', index.get());
         if (end == -1) 
             throw new RuntimeException("ReadInteger error, wrong format. Bad ending of the Bencoded String ");
 
@@ -126,8 +132,8 @@ public class BencodeReader
 
         try
         {
-                integer = Integer.parseInt(bencodedString.substring(index, end - index));
-                index = end + 1;
+                integer = Integer.parseInt(bencodedString.substring(index.get(), end));
+                index.getAndSet(end + 1);
         }
         catch (Exception ex) 
         {      
@@ -138,18 +144,17 @@ public class BencodeReader
         return new BInteger(integer);
     }
 
-    private static BString ReadString(String bencodedString, int index)
+    private static BString ReadString(String bencodedString, AtomicInteger index)
     {
 
         Integer length, colon;
 
         try
         {
-                colon = bencodedString.indexOf(':', index);
+                colon = bencodedString.indexOf(':', index.get());
                 if (colon == -1) 
                     throw new RuntimeException("ReadInteger error, wrong format. Bad ending of the Bencoded String ");
-                
-                length = Integer.parseInt(bencodedString.substring(index, colon - index));
+                length = Integer.parseInt(bencodedString.substring(index.get(), colon ));
         }
         catch (Exception ex) 
         {
@@ -157,13 +162,13 @@ public class BencodeReader
             return null; 
         }
 
-        index = colon + 1;
-        int tmpIndex = index;
-        index += length;
+        index.getAndSet (colon + 1);
+        int tmpIndex = index.getAndAdd(length);
+        //index += length;
 
         try
         {
-            return new BString(bencodedString.substring(tmpIndex, length));
+            return new BString(bencodedString.substring(tmpIndex, tmpIndex + length));
         }
         catch (Exception ex) 
         {

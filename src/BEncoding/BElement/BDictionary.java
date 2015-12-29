@@ -85,4 +85,16 @@ public class BDictionary implements BElement
     {
             Values.put(new BString(key), new BInteger(value));
     }
+    
+    @Override
+    public String toString()
+    {
+        String s = "";
+        for (Map.Entry<BString, BElement> entry : Values.entrySet())
+        {
+            s+= "key:" + entry.getKey().toString() + " ";
+            s+= "value:" + entry.getValue().toString() + " ";
+        }
+        return s;
+    }
 }

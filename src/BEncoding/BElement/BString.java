@@ -3,7 +3,7 @@ package BEncoding.BElement;
 /**
  * Bencode string.
  */
-public class BString implements BElement
+public class BString implements BElement, Comparable<BString>
 {  
     /**
      *  Value of the bencoded string.
@@ -38,5 +38,17 @@ public class BString implements BElement
                 u.append(this.Value.length());
             
             return u.append(':').append(this.Value);
+    }
+
+    @Override
+    public int compareTo(BString o)
+    {
+        return this.Value.compareTo(o.Value);
+    }
+    
+    @Override
+    public String toString()
+    {
+        return Value.toString();
     }
 }

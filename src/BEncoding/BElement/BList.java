@@ -2,6 +2,7 @@
 package BEncoding.BElement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 /**
  * Bencode List.
@@ -65,5 +66,16 @@ public class BList implements BElement
     public void Add(Integer value)
     {
             Value.add(new BInteger(value));
+    }
+    
+    @Override
+    public String toString()
+    {
+        String s = "";
+        for(BElement el: Value)
+        {
+            s += el.toString() + " ";
+        }
+        return s;
     }
 }
