@@ -28,8 +28,7 @@ public class Bittorrent extends JFrame implements Observer
 
     private final DownloadsTableModel _tableModel = new DownloadsTableModel();
     private final JTable _table;
-    private final JButton _pauseButton = new JButton("Pause");
-    private final JButton _resumeButton = new JButton("Resume");
+    private final JButton _pauseButton, _resumeButton;
     private final JButton _cancelButton, _deleteButton;
     private Download _selectedDownload;
     private static final int _WIDTH = 800;
@@ -111,6 +110,7 @@ public class Bittorrent extends JFrame implements Observer
         downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();
+		_pauseButton = new JButton("Pause");
         _pauseButton.addActionListener(new ActionListener()
         {
             @Override
@@ -122,6 +122,7 @@ public class Bittorrent extends JFrame implements Observer
         _pauseButton.setEnabled(false);
         buttonsPanel.add(_pauseButton);
 
+		_resumeButton = new JButton("Resume");
         _resumeButton.addActionListener(new ActionListener()
         {
             @Override
