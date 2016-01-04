@@ -209,6 +209,7 @@ public class Bittorrent extends JFrame implements Observer
     private void _actionDelete()
     {
         _tableModel.deleteDownload(_table.getSelectedRow());
+        _selectedDownload = null;
         updateButtons();
     }
 
