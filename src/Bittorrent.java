@@ -22,6 +22,8 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class Bittorrent extends JFrame implements Observer
 {
@@ -97,6 +99,14 @@ public class Bittorrent extends JFrame implements Observer
         setJMenuBar(menuBar);
 
         _table = new JTable(_tableModel);
+        _table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
+        {
+            @Override
+            public void valueChanged(ListSelectionEvent e)
+            {
+                tableSelectionChanged();
+            }
+        });
         _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         ProgressRenderer renderer = new ProgressRenderer(0, 100);
@@ -110,7 +120,7 @@ public class Bittorrent extends JFrame implements Observer
         downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
 
         JPanel buttonsPanel = new JPanel();
-		_pauseButton = new JButton("Pause");
+        _pauseButton = new JButton("Pause");
         _pauseButton.addActionListener(new ActionListener()
         {
             @Override
@@ -122,7 +132,7 @@ public class Bittorrent extends JFrame implements Observer
         _pauseButton.setEnabled(false);
         buttonsPanel.add(_pauseButton);
 
-		_resumeButton = new JButton("Resume");
+        _resumeButton = new JButton("Resume");
         _resumeButton.addActionListener(new ActionListener()
         {
             @Override
@@ -161,6 +171,12 @@ public class Bittorrent extends JFrame implements Observer
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(downloadsPanel, BorderLayout.CENTER);
         getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Test adding row
+        _actionAdd();
+        _actionAdd();
+        _actionAdd();
+        _actionAdd();
     }
 
     /**
@@ -192,7 +208,14 @@ public class Bittorrent extends JFrame implements Observer
      */
     private void _actionDelete()
     {
+        _tableModel.deleteDownload(_table.getSelectedRow());
+        _selectedDownload = null;
+        updateButtons();
+    }
 
+    private void _actionAdd()
+    {
+        _tableModel.addDownload(new Download("test"));
     }
 
     /**
@@ -209,7 +232,7 @@ public class Bittorrent extends JFrame implements Observer
                     _pauseButton.setEnabled(true);
                     _resumeButton.setEnabled(false);
                     _cancelButton.setEnabled(true);
-                    _deleteButton.setEnabled(false);
+                    _deleteButton.setEnabled(true);
                     break;
                 case Download.PAUSED:
                     _pauseButton.setEnabled(false);
@@ -238,10 +261,35 @@ public class Bittorrent extends JFrame implements Observer
         }
     }
 
+    /**
+     * Function to change table selection
+     */
+    private void tableSelectionChanged()
+    {
+        if (_selectedDownload != null)
+        {
+            _selectedDownload.deleteObserver(Bittorrent.this);
+        } else
+        {
+            _selectedDownload = _tableModel.getDownload(_table.getSelectedRow());
+            _selectedDownload.addObserver(Bittorrent.this);
+            updateButtons();
+        }
+    }
+
+    /**
+     * Function to update buttons state
+     *
+     * @param o
+     * @param arg
+     */
     @Override
     public void update(Observable o, Object arg)
     {
-        updateButtons();
+        if (_selectedDownload != null && _selectedDownload.equals(o))
+        {
+            updateButtons();
+        }
     }
 
     /**
