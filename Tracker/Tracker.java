@@ -1,37 +1,28 @@
 package Tracker;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.concurrent.locks.ReentrantLock;
 
+import TorrentMetadata.TorrentFile;
+
 /**
- * 
+ * Class used for tracking torrent files and peers
  * @author Pawel
  *
  */
 
-/**
- Tracker will check torrent files usage and make statistics from it,
- such as how many peers are downloading file, how much of it is being downloaded and so on.
- */
-
 public class Tracker
 {
-	// timer is needed for calculating operations times
 	Timer timer;
-	Time time;
-	// list of possible tracker states
-	public static final String EVENT[] =
+	public static final String state[] =
 		{
 		    "Started", "Stopped", "Completed", "Update"
 		};
-	// how long tracker should wait for response
 	public int interval = 5 * 60;
-	// this lock will prevent from unnecessary changes of tracker status
 	private ReentrantLock trackerLock = new ReentrantLock();
-	// list of peers
-	ArrayList<Peer> peers;
+	private ArrayList<Peer> peers;
+	private ArrayList<InfoHash> torrents = new ArrayList<InfoHash>();
 	public int fileID, userID;
 	public String url;
 	public InfoHash infoHash;
@@ -40,19 +31,44 @@ public class Tracker
 	{
 		this.fileID = fileID;
 		// infoHash value should be given here
-		this.userID = time.getMinutes() * time.getSeconds();
+		this.userID = 0;
 		this.peers = new ArrayList<Peer>(fileID);
 	}
 	
-	// managing tracker's lock
-	
+	/**
+	 * Locks tracker to prevent modification
+	 */
 	public void lock()
 	{
 		this.trackerLock.lock();
 	}
 	
+	/**
+	 * Unlocks tracker to make modifications possible
+	 */
 	public void unlock()
 	{
 		this.trackerLock.unlock();
 	}
+	/**
+	 * Adds new torrent to track
+	 * @param infoHash encoded in SHA1 hash of torrent metafile
+	 */
+	public void add(InfoHash infoHash)
+	{
+		if(this.trackerLock.isHeldByCurrentThread() == true)
+		{
+			System.out.println("Tracker is locked right now.");
+		}
+		
+		if(infoHash.toString().length() != 20)
+		{
+			System.out.println("InfoHash length is not correct!");
+		}
+		
+		this.torrents.add(infoHash);
+	}
+	
+	//TODO
+	//add function for tracking peer and torrent
 }
