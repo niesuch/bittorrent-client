@@ -1,32 +1,30 @@
 package Tracker;
 
 import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
- * 
+ * Byte array identifying torrent file
  * @author Pawel
  *
  */
 
-/**
- InfoHash is needed for identifying a torrent, its length is 20 bytes.
- */
-
 public class InfoHash 
 {
-	private ByteBuffer infoHashBuffer = ByteBuffer.allocate(20);
+	public ByteBuffer infoHash = ByteBuffer.allocate(20);
 	
-	// Constructor
+	/**
+	 * Generates InfoHash for given torrent
+	 * @param KEY_INFO info bytes from torrent info
+	 * @throws NoSuchAlgorithmException
+	 */
 	
-	public InfoHash (byte[] infoHashBytes) {
-
-		if ((infoHashBytes == null) || (infoHashBytes.length != 20)) 
-		{
-			System.out.println("Provided bytes are not correct!");
-		}
-
-		this.infoHashBuffer.put (infoHashBytes);
-		this.infoHashBuffer.rewind();
-
+	public InfoHash (ByteBuffer KEY_INFO) throws NoSuchAlgorithmException 
+	{
+		MessageDigest digest = MessageDigest.getInstance("SHA-1");
+		digest.update(KEY_INFO.array());
+		byte[] hash = digest.digest();
+		this.infoHash = ByteBuffer.wrap(hash); 
 	}
 }
