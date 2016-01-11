@@ -17,6 +17,8 @@ class Download extends Observable implements Runnable
     private final int _size;
     private final int _downloaded;
     private int _status;
+    private final int _downloadSpeed, _uploadSpeed;
+    private final int _timeRemaining;
 
     public Download(String name)
     {
@@ -24,6 +26,9 @@ class Download extends Observable implements Runnable
         _size = -1;
         _downloaded = 0;
         _status = DOWNLOADING;
+        _downloadSpeed = 0;
+        _uploadSpeed = 0;
+        _timeRemaining = -1;
 
         _download();
     }
@@ -46,6 +51,21 @@ class Download extends Observable implements Runnable
     public String getFileName()
     {
         return _name;
+    }
+    
+    public int getDownloadSpeed()
+    {
+        return _downloadSpeed;
+    }
+    
+    public int getUploadSpeed()
+    {
+        return _uploadSpeed;
+    }
+    
+    public int getTimeRemaining()
+    {
+        return _timeRemaining;
     }
 
     public void pause()

@@ -7,16 +7,22 @@ import javax.swing.table.AbstractTableModel;
 
 class DownloadsTableModel extends AbstractTableModel implements Observer
 {
+    // TODO: horizontal scroll
+    // TODO: if I have time show/hide columns
+    // TODO: more informations: information on the "pieces", Peer data including IP addresses,
+    // the speeds at which you are downloading and uploading to/from
+    // them, the port they are running BitTorrent on, and the BitTorrent client they are using.
 
     private static final String[] _columnNames =
     {
-        "Name", "Size", "% downloaded", "Status"
+        "Name", "Size", "% downloaded", "Status", "Download", "Upload", 
+        "Time remaining"
     };
 
     private static final Class[] _columnClasses =
     {
         String.class, String.class, JProgressBar.class,
-        String.class
+        String.class, String.class, String.class, String.class
     };
 
     private final ArrayList _downloadList = new ArrayList();
@@ -59,7 +65,15 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
             case 2: // Progress
                 return download.getProgress();
             case 3: // Status
-                return Download.STATUSES[download.getStatus()];
+                return download.STATUSES[download.getStatus()];
+            case 4: // Download
+                return download.getDownloadSpeed() + " kb/s";
+            case 5: // Upload
+                return download.getUploadSpeed() + " kb/s";
+            case 6: // Time remaining
+                int time = download.getTimeRemaining();
+                return (time == -1) ? "" : Integer.toString(time);
+                
         }
         return "";
     }
