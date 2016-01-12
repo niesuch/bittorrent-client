@@ -117,7 +117,14 @@ public class Bittorrent extends JFrame implements Observer
         JPanel downloadsPanel = new JPanel();
         downloadsPanel.setBorder(BorderFactory.createTitledBorder("Downloads"));
         downloadsPanel.setLayout(new BorderLayout());
+        _table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
+        
+        _table.getColumnModel().getColumn(0).setPreferredWidth(120);
+        _table.getColumnModel().getColumn(1).setPreferredWidth(120);
+        _table.getColumnModel().getColumn(2).setPreferredWidth(240);
+        _table.getColumnModel().getColumn(3).setPreferredWidth(100);
+        _table.getColumnModel().getColumn(6).setPreferredWidth(100);
 
         JPanel buttonsPanel = new JPanel();
         _pauseButton = new JButton("Pause");

@@ -7,7 +7,6 @@ import javax.swing.table.AbstractTableModel;
 
 class DownloadsTableModel extends AbstractTableModel implements Observer
 {
-    // TODO: horizontal scroll
     // TODO: if I have time show/hide columns
     // TODO: more informations: information on the "pieces", Peer data including IP addresses,
     // the speeds at which you are downloading and uploading to/from
@@ -16,13 +15,14 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
     private static final String[] _columnNames =
     {
         "Name", "Size", "% downloaded", "Status", "Download", "Upload", 
-        "Time remaining"
+        "Time remaining", "Pieces"
     };
 
     private static final Class[] _columnClasses =
     {
         String.class, String.class, JProgressBar.class,
-        String.class, String.class, String.class, String.class
+        String.class, String.class, String.class, String.class,
+        String.class
     };
 
     private final ArrayList _downloadList = new ArrayList();
