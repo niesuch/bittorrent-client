@@ -50,7 +50,7 @@ public class Bittorrent extends JFrame implements Observer
     public Bittorrent()
     {
         setTitle("BitTorrent");
-        setSize(Config.WIDTH, Config.HEIGHT);
+        setSize(Config.getWindowWidth(), Config.getWindowHeight());
 
         _table = new JTable(_tableModel);
         _table.setAutoCreateRowSorter(true);

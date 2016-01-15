@@ -7,6 +7,25 @@ package Config;
  */
 public abstract class Config
 {
-    public static final int WIDTH = 1024;
-    public static final int HEIGHT = 768;
+
+    private static final int _WIDTH = 1024;
+    private static final int _HEIGHT = 768;
+
+    /**
+     * Return window width
+     * @return 
+     */
+    public static int getWindowWidth()
+    {
+        return _WIDTH;
+    }
+    
+    /**
+     * Return window height
+     * @return 
+     */
+    public static int getWindowHeight()
+    {
+        return _HEIGHT;
+    }
 }
