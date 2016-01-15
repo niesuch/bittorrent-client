@@ -8,9 +8,6 @@ import javax.swing.table.AbstractTableModel;
 class DownloadsTableModel extends AbstractTableModel implements Observer
 {
     // TODO: if I have time show/hide columns
-    // TODO: more informations: information on the "pieces", Peer data including IP addresses,
-    // the speeds at which you are downloading and uploading to/from
-    // them, the port they are running BitTorrent on, and the BitTorrent client they are using.
 
     private static final String[] _columnNames =
     {
@@ -25,8 +22,18 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
         String.class
     };
 
+    private static final int[] _columnSizes =
+    {
+        120, 120, 240, 100, 0, 0, 100, 0
+    };
+
     private final ArrayList _downloadList = new ArrayList();
 
+    public int[] getColumnSizes()
+    {
+        return _columnSizes;
+    }
+    
     @Override
     public int getColumnCount()
     {

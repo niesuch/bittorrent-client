@@ -1,5 +1,8 @@
 
+import Utils.Utils;
+import Config.Config;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -10,17 +13,17 @@ import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -30,16 +33,31 @@ public class Bittorrent extends JFrame implements Observer
 
     private final DownloadsTableModel _tableModel = new DownloadsTableModel();
     private final JTable _table;
-    private final JButton _pauseButton, _resumeButton;
-    private final JButton _cancelButton, _deleteButton;
+    private JButton _pauseButton, _resumeButton;
+    private JButton _cancelButton, _deleteButton;
+    private final JPanel _infoPanel, _downloadsPanel, _buttonsPanel;
+    private final JSplitPane _splitPane;
     private Download _selectedDownload;
-    private static final int _WIDTH = 800;
-    private static final int _HEIGHT = 600;
+    private final JTextField[] _textFields;
+    private final String[] _formLabels =
+    {
+        "Name: ", "Size: ", "% downloaded: ", "Status: ",
+        "Download: ", "Upload: ", "Time remaining: ", "Pieces: ",
+        "Peer data including IP addresses: ", "Speed download from them: ",
+        "Speed upload to them: ", "Port using: ", "Port client: "
+    };
 
     public Bittorrent()
     {
         setTitle("BitTorrent");
-        setSize(_WIDTH, _HEIGHT);
+        setSize(Config.WIDTH, Config.HEIGHT);
+
+        _table = new JTable(_tableModel);
+        _table.setAutoCreateRowSorter(true);
+        _downloadsPanel = new JPanel();
+        _buttonsPanel = new JPanel();
+        _infoPanel = new JPanel();
+        _textFields = new JTextField[_formLabels.length];
 
         addWindowListener(new WindowAdapter()
         {
@@ -50,7 +68,85 @@ public class Bittorrent extends JFrame implements Observer
             }
         });
 
-        JMenuBar menuBar = new JMenuBar();
+        _initNativeWindowView();
+        _initMenuBar();
+        _initTable();
+        _initInfoPanel();
+        _initButtonsPanel();
+
+        _splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, _downloadsPanel, _infoPanel);
+        _splitPane.setResizeWeight(0.7);
+
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(_buttonsPanel, BorderLayout.SOUTH);
+        getContentPane().add(_splitPane, BorderLayout.CENTER);
+
+        // Test adding row
+        _actionAdd("Test 1");
+        _actionAdd("Test 2");
+        _actionAdd("Test 3");
+        _actionAdd("Test 4");
+    }
+
+    /**
+     * Initialization buttons panel
+     */
+    private void _initButtonsPanel()
+    {
+        _pauseButton = new JButton("Pause");
+        _pauseButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                _actionPause();
+            }
+        });
+        _pauseButton.setEnabled(false);
+        _buttonsPanel.add(_pauseButton);
+
+        _resumeButton = new JButton("Resume");
+        _resumeButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                _actionResume();
+            }
+        });
+        _resumeButton.setEnabled(false);
+        _buttonsPanel.add(_resumeButton);
+
+        _cancelButton = new JButton("Cancel");
+        _cancelButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                _actionCancel();
+            }
+        });
+        _cancelButton.setEnabled(false);
+        _buttonsPanel.add(_cancelButton);
+
+        _deleteButton = new JButton("Delete");
+        _deleteButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                _actionDelete();
+            }
+        });
+        _deleteButton.setEnabled(false);
+        _buttonsPanel.add(_deleteButton);
+    }
+
+    /**
+     * Initialization menu bar
+     */
+    private void _initMenuBar()
+    {
         JMenu fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
 
@@ -61,7 +157,7 @@ public class Bittorrent extends JFrame implements Observer
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                _openFileChooser();
+                new Utils().openFileChooser();
             }
         });
 
@@ -90,21 +186,30 @@ public class Bittorrent extends JFrame implements Observer
             }
         });
 
+        fileMenu = new JMenu("File");
+        fileMenu.setMnemonic(KeyEvent.VK_F);
+
         fileMenu.add(fileOpenMenuItem);
         fileMenu.add(fileExitMenuItem);
         helpMenu.add(helpAboutMenuItem);
 
+        JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
+    }
 
-        _table = new JTable(_tableModel);
+    /**
+     * Initialization download table
+     */
+    private void _initTable()
+    {
         _table.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {
             @Override
             public void valueChanged(ListSelectionEvent e)
             {
-                tableSelectionChanged();
+                _tableSelectionChanged();
             }
         });
         _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -114,76 +219,51 @@ public class Bittorrent extends JFrame implements Observer
         _table.setDefaultRenderer(JProgressBar.class, renderer);
         _table.setRowHeight((int) renderer.getPreferredSize().getHeight());
 
-        JPanel downloadsPanel = new JPanel();
-        downloadsPanel.setBorder(BorderFactory.createTitledBorder("Downloads"));
-        downloadsPanel.setLayout(new BorderLayout());
+        _downloadsPanel.setBorder(BorderFactory.createTitledBorder("Downloads"));
+        _downloadsPanel.setLayout(new BorderLayout());
         _table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
-        
-        _table.getColumnModel().getColumn(0).setPreferredWidth(120);
-        _table.getColumnModel().getColumn(1).setPreferredWidth(120);
-        _table.getColumnModel().getColumn(2).setPreferredWidth(240);
-        _table.getColumnModel().getColumn(3).setPreferredWidth(100);
-        _table.getColumnModel().getColumn(6).setPreferredWidth(100);
+        _downloadsPanel.add(new JScrollPane(_table), BorderLayout.CENTER);
 
-        JPanel buttonsPanel = new JPanel();
-        _pauseButton = new JButton("Pause");
-        _pauseButton.addActionListener(new ActionListener()
+        int i = 0;
+        for (int size : _tableModel.getColumnSizes())
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
+            if (size != 0)
             {
-                _actionPause();
+                _table.getColumnModel().getColumn(i).setPreferredWidth(size);
             }
-        });
-        _pauseButton.setEnabled(false);
-        buttonsPanel.add(_pauseButton);
+            i++;
+        }
+    }
 
-        _resumeButton = new JButton("Resume");
-        _resumeButton.addActionListener(new ActionListener()
+    /**
+     * Initialization information panel
+     */
+    private void _initInfoPanel()
+    {
+        JPanel formPanel = new JPanel();
+        formPanel.setBorder(BorderFactory.createTitledBorder("Informations"));
+
+        JPanel form = new JPanel(new GridLayout(0, 2));
+
+        int i = 0;
+        for (String formLabel : _formLabels)
         {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                _actionResume();
-            }
-        });
-        _resumeButton.setEnabled(false);
-        buttonsPanel.add(_resumeButton);
+            form.add(new JLabel(formLabel));
+            _textFields[i] = new JTextField(10);
+            form.add(_textFields[i++]);
+        }
 
-        _cancelButton = new JButton("Cancel");
-        _cancelButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                _actionCancel();
-            }
-        });
-        _cancelButton.setEnabled(false);
-        buttonsPanel.add(_cancelButton);
+        formPanel.add(form);
+        _infoPanel.add(formPanel);
 
-        _deleteButton = new JButton("Delete");
-        _deleteButton.addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                _actionDelete();
-            }
-        });
-        _deleteButton.setEnabled(false);
-        buttonsPanel.add(_deleteButton);
+    }
 
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(downloadsPanel, BorderLayout.CENTER);
-        getContentPane().add(buttonsPanel, BorderLayout.SOUTH);
-
-        // Test adding row
-        _actionAdd();
-        _actionAdd();
-        _actionAdd();
-        _actionAdd();
+    /**
+     * Initialization native window view
+     */
+    private void _initNativeWindowView()
+    {
+        new Utils().nativeWindowView();
     }
 
     /**
@@ -220,9 +300,9 @@ public class Bittorrent extends JFrame implements Observer
         updateButtons();
     }
 
-    private void _actionAdd()
+    private void _actionAdd(String str)
     {
-        _tableModel.addDownload(new Download("test"));
+        _tableModel.addDownload(new Download(str));
     }
 
     /**
@@ -271,17 +351,28 @@ public class Bittorrent extends JFrame implements Observer
     /**
      * Function to change table selection
      */
-    private void tableSelectionChanged()
+    private void _tableSelectionChanged()
     {
         if (_selectedDownload != null)
         {
             _selectedDownload.deleteObserver(Bittorrent.this);
+            _setFields(_table.getSelectedRow());
         } else
         {
             _selectedDownload = _tableModel.getDownload(_table.getSelectedRow());
             _selectedDownload.addObserver(Bittorrent.this);
             updateButtons();
         }
+    }
+
+    /**
+     * Function set text to text field in form
+     *
+     * @param index
+     */
+    private void _setFields(int index)
+    {
+        _textFields[0].setText(_table.getValueAt(index, 0).toString());
     }
 
     /**
@@ -314,27 +405,7 @@ public class Bittorrent extends JFrame implements Observer
                 + "\n- Puszczyński Paweł"
                 + "\n\nApplication version: 1.0";
 
-        final JOptionPane pane = new JOptionPane(authors);
-        final JDialog dialog = pane.createDialog((JFrame) null, "About");
-        dialog.setVisible(true);
-    }
-
-    /**
-     * Function to open JFileChooser
-     *
-     * @return
-     */
-    private String _openFileChooser()
-    {
-        JFileChooser fc = new JFileChooser();
-        int chooser = fc.showOpenDialog(this);
-
-        if (chooser == JFileChooser.APPROVE_OPTION)
-        {
-            return fc.getSelectedFile().getAbsolutePath();
-        }
-
-        return null;
+        new Utils().generateDialogWithString(authors, "About");
     }
 
     public static void main(String[] args)
