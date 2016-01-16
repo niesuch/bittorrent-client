@@ -1,6 +1,11 @@
 
 import java.util.Observable;
 
+/**
+ * Download class - class which support download events
+ *
+ * @author Niesuch
+ */
 class Download extends Observable implements Runnable
 {
 
@@ -33,47 +38,88 @@ class Download extends Observable implements Runnable
         _download();
     }
 
+    /**
+     * Return download size
+     *
+     * @return
+     */
     public int getSize()
     {
         return _size;
     }
 
+    /**
+     * Return download progress
+     *
+     * @return
+     */
     public float getProgress()
     {
         return ((float) _downloaded / _size) * 100;
     }
 
+    /**
+     * Return download status
+     *
+     * @return
+     */
     public int getStatus()
     {
         return _status;
     }
-    
+
+    /**
+     * Return download file name
+     *
+     * @return
+     */
     public String getFileName()
     {
         return _name;
     }
-    
+
+    /**
+     * Return download speed
+     *
+     * @return
+     */
     public int getDownloadSpeed()
     {
         return _downloadSpeed;
     }
-    
+
+    /**
+     * Return upload speed
+     *
+     * @return
+     */
     public int getUploadSpeed()
     {
         return _uploadSpeed;
     }
-    
+
+    /**
+     * Return download time remaining
+     *
+     * @return
+     */
     public int getTimeRemaining()
     {
         return _timeRemaining;
     }
 
+    /**
+     * Pause download
+     */
     public void pause()
     {
         _status = PAUSED;
         _stateChanged();
     }
 
+    /**
+     * Resume download
+     */
     public void resume()
     {
         _status = DOWNLOADING;
@@ -81,23 +127,35 @@ class Download extends Observable implements Runnable
         _download();
     }
 
+    /**
+     * Cancel download
+     */
     public void cancel()
     {
         _status = CANCELLED;
         _stateChanged();
     }
 
+    /**
+     * Error download
+     */
     private void error()
     {
         _status = ERROR;
         _stateChanged();
     }
 
+    /**
+     * Function which support downloads
+     */
     private void _download()
     {
 
     }
 
+    /**
+     * Function to change states
+     */
     private void _stateChanged()
     {
         setChanged();
@@ -107,6 +165,6 @@ class Download extends Observable implements Runnable
     @Override
     public void run()
     {
-        
+
     }
 }

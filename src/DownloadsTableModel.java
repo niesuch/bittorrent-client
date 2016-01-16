@@ -5,13 +5,17 @@ import java.util.Observer;
 import javax.swing.JProgressBar;
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * DownloadTableModel class - class which support table with downloads
+ *
+ * @author Niesuch
+ */
 class DownloadsTableModel extends AbstractTableModel implements Observer
 {
-    // TODO: if I have time show/hide columns
 
     private static final String[] _columnNames =
     {
-        "Name", "Size", "% downloaded", "Status", "Download", "Upload", 
+        "Name", "Size", "% downloaded", "Status", "Download", "Upload",
         "Time remaining", "Pieces"
     };
 
@@ -29,11 +33,16 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
 
     private final ArrayList _downloadList = new ArrayList();
 
+    /**
+     * Return column sizes
+     *
+     * @return
+     */
     public int[] getColumnSizes()
     {
         return _columnSizes;
     }
-    
+
     @Override
     public int getColumnCount()
     {
@@ -80,7 +89,7 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
             case 6: // Time remaining
                 int time = download.getTimeRemaining();
                 return (time == -1) ? "" : Integer.toString(time);
-                
+
         }
         return "";
     }
@@ -92,6 +101,11 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
         fireTableRowsUpdated(index, index);
     }
 
+    /**
+     * Adding new download row
+     *
+     * @param download
+     */
     public void addDownload(Download download)
     {
         download.addObserver(this);
@@ -99,11 +113,22 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
         fireTableRowsInserted(getRowCount() - 1, getRowCount() - 1);
     }
 
+    /**
+     * Return download row
+     *
+     * @param row
+     * @return
+     */
     public Download getDownload(int row)
     {
         return (Download) _downloadList.get(row);
     }
 
+    /**
+     * Deleting download row
+     *
+     * @param row
+     */
     public void deleteDownload(int row)
     {
         _downloadList.remove(row);

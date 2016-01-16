@@ -13,6 +13,7 @@ import java.util.Observer;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -27,16 +28,23 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
+/**
+ * Bittorrent class - main class
+ *
+ * @author Niesuch
+ */
 public class Bittorrent extends JFrame implements Observer
 {
+    // TODO: Poprawic prawy panel
 
     private final DownloadsTableModel _tableModel = new DownloadsTableModel();
     private final JTable _table;
     private JButton _pauseButton, _resumeButton;
     private JButton _cancelButton, _deleteButton;
     private final JPanel _infoPanel, _downloadsPanel, _buttonsPanel;
-    private final JSplitPane _splitPane;
     private Download _selectedDownload;
     private final JTextField[] _textFields;
     private final String[] _formLabels =
@@ -74,12 +82,12 @@ public class Bittorrent extends JFrame implements Observer
         _initInfoPanel();
         _initButtonsPanel();
 
-        _splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, _downloadsPanel, _infoPanel);
-        _splitPane.setResizeWeight(0.7);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, _downloadsPanel, _infoPanel);
+        splitPane.setResizeWeight(0.7);
 
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(_buttonsPanel, BorderLayout.SOUTH);
-        getContentPane().add(_splitPane, BorderLayout.CENTER);
+        getContentPane().add(splitPane, BorderLayout.CENTER);
 
         // Test adding row
         _actionAdd("Test 1");
@@ -157,7 +165,7 @@ public class Bittorrent extends JFrame implements Observer
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                new Utils().openFileChooser();
+                Utils.openFileChooser();
             }
         });
 
@@ -186,6 +194,19 @@ public class Bittorrent extends JFrame implements Observer
             }
         });
 
+        JMenu mViewMenu = new JMenu("View");
+        mViewMenu.setMnemonic(KeyEvent.VK_F);
+        TableColumnModel model = _table.getColumnModel();
+        for (int i = 0; i < _tableModel.getColumnCount(); i++)
+        {
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem(
+                    _tableModel.getColumnName(i));
+            item.setSelected(true);
+            TableColumn column = model.getColumn(i);
+            item.addActionListener(new ColumnKeeper(column, _table, _tableModel));
+            mViewMenu.add(item);
+        }
+
         fileMenu = new JMenu("File");
         fileMenu.setMnemonic(KeyEvent.VK_F);
 
@@ -195,6 +216,7 @@ public class Bittorrent extends JFrame implements Observer
 
         JMenuBar menuBar = new JMenuBar();
         menuBar.add(fileMenu);
+        menuBar.add(mViewMenu);
         menuBar.add(helpMenu);
         setJMenuBar(menuBar);
     }
@@ -263,7 +285,7 @@ public class Bittorrent extends JFrame implements Observer
      */
     private void _initNativeWindowView()
     {
-        new Utils().nativeWindowView();
+        Utils.nativeWindowView();
     }
 
     /**
@@ -373,6 +395,13 @@ public class Bittorrent extends JFrame implements Observer
     private void _setFields(int index)
     {
         _textFields[0].setText(_table.getValueAt(index, 0).toString());
+        _textFields[1].setText(_table.getValueAt(index, 1).toString());
+        _textFields[2].setText(_table.getValueAt(index, 2).toString());
+        _textFields[3].setText(_table.getValueAt(index, 3).toString());
+        _textFields[4].setText(_table.getValueAt(index, 4).toString());
+        _textFields[5].setText(_table.getValueAt(index, 5).toString());
+        _textFields[6].setText(_table.getValueAt(index, 6).toString());
+        _textFields[7].setText(_table.getValueAt(index, 7).toString());
     }
 
     /**
@@ -405,7 +434,7 @@ public class Bittorrent extends JFrame implements Observer
                 + "\n- Puszczyński Paweł"
                 + "\n\nApplication version: 1.0";
 
-        new Utils().generateDialogWithString(authors, "About");
+        Utils.generateDialogWithString(authors, "About");
     }
 
     public static void main(String[] args)

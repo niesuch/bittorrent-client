@@ -12,7 +12,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  *
  * @author Niesuch
  */
-public class Utils
+public abstract class Utils
 {
 
     public Utils()
@@ -25,7 +25,7 @@ public class Utils
      *
      * @return
      */
-    public String openFileChooser()
+    public static String openFileChooser()
     {
         JFileChooser fc = new JFileChooser();
         int chooser = fc.showOpenDialog(null);
@@ -44,7 +44,7 @@ public class Utils
      * @param str
      * @param title
      */
-    public void generateDialogWithString(String str, String title)
+    public static void generateDialogWithString(String str, String title)
     {
         final JOptionPane pane = new JOptionPane(str);
         final JDialog dialog = pane.createDialog((JFrame) null, title);
@@ -54,7 +54,7 @@ public class Utils
     /**
      * Function to initialization native window view
      */
-    public void nativeWindowView()
+    public static void nativeWindowView()
     {
         try
         {
