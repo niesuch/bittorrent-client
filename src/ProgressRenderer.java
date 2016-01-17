@@ -4,6 +4,11 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+/**
+ * ProgressRenderer class - class which support download progress bar
+ *
+ * @author Niesuch
+ */
 class ProgressRenderer extends JProgressBar implements TableCellRenderer
 {
 
