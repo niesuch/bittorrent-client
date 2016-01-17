@@ -33,7 +33,7 @@ The distributed nature of BitTorrent can lead to a flood-like spreading of a fil
 * Source: [Wikipedia - Bittorrent](https://en.wikipedia.org/wiki/BitTorrent)
 
 ## About program
-##### Layout
+#### Layout
 Layout was written in Swing (GUI for JAVA). It can be used on any operating system.
 
 Layout consists of the functionalities, such as:
