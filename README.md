@@ -42,6 +42,10 @@ Layout consists of the functionalities, such as:
 * Right panel (JPanel) with additional informations about our torrent. It can be collapse if user doesn't want it.
 * Buttons panel (JButton) consisting of four buttons which are used to perform torrent actions (Pause, Resume, Cancel, Delete).
 
+<b>Screenshot:</b>
+
+![Alt text](/docs/screenshots/layout.jpg)
+
 ## Design Assumptions
 1. Using camelCase.
 2. Brackets ({ }) adding in next line.
