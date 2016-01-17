@@ -38,8 +38,6 @@ import javax.swing.table.TableColumnModel;
  */
 public class Bittorrent extends JFrame implements Observer
 {
-    // TODO: Poprawic prawy panel
-
     private final DownloadsTableModel _tableModel = new DownloadsTableModel();
     private final JTable _table;
     private JButton _pauseButton, _resumeButton;
@@ -64,7 +62,7 @@ public class Bittorrent extends JFrame implements Observer
         _table.setAutoCreateRowSorter(true);
         _downloadsPanel = new JPanel();
         _buttonsPanel = new JPanel();
-        _infoPanel = new JPanel();
+        _infoPanel = new JPanel(new BorderLayout());
         _textFields = new JTextField[_formLabels.length];
 
         addWindowListener(new WindowAdapter()
@@ -275,8 +273,9 @@ public class Bittorrent extends JFrame implements Observer
             form.add(_textFields[i++]);
         }
 
-        formPanel.add(form);
-        _infoPanel.add(formPanel);
+        formPanel.add(form);        
+        _infoPanel.add(formPanel);        
+        _infoPanel.add(new JScrollPane(formPanel), BorderLayout.CENTER);
 
     }
 
