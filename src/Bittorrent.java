@@ -38,6 +38,7 @@ import javax.swing.table.TableColumnModel;
  */
 public class Bittorrent extends JFrame implements Observer
 {
+
     private final DownloadsTableModel _tableModel = new DownloadsTableModel();
     private final JTable _table;
     private JButton _pauseButton, _resumeButton;
@@ -195,6 +196,7 @@ public class Bittorrent extends JFrame implements Observer
         JMenu mViewMenu = new JMenu("View");
         mViewMenu.setMnemonic(KeyEvent.VK_F);
         TableColumnModel model = _table.getColumnModel();
+
         for (int i = 0; i < _tableModel.getColumnCount(); i++)
         {
             JCheckBoxMenuItem item = new JCheckBoxMenuItem(
@@ -273,8 +275,8 @@ public class Bittorrent extends JFrame implements Observer
             form.add(_textFields[i++]);
         }
 
-        formPanel.add(form);        
-        _infoPanel.add(formPanel);        
+        formPanel.add(form);
+        _infoPanel.add(formPanel);
         _infoPanel.add(new JScrollPane(formPanel), BorderLayout.CENTER);
 
     }
@@ -292,7 +294,8 @@ public class Bittorrent extends JFrame implements Observer
      */
     private void _actionPause()
     {
-
+        _selectedDownload.pause();
+        updateButtons();
     }
 
     /**
@@ -300,7 +303,8 @@ public class Bittorrent extends JFrame implements Observer
      */
     private void _actionResume()
     {
-
+        _selectedDownload.resume();
+        updateButtons();
     }
 
     /**
@@ -308,7 +312,8 @@ public class Bittorrent extends JFrame implements Observer
      */
     private void _actionCancel()
     {
-
+        _selectedDownload.cancel();
+        updateButtons();
     }
 
     /**
@@ -393,14 +398,17 @@ public class Bittorrent extends JFrame implements Observer
      */
     private void _setFields(int index)
     {
-        _textFields[0].setText(_table.getValueAt(index, 0).toString());
-        _textFields[1].setText(_table.getValueAt(index, 1).toString());
-        _textFields[2].setText(_table.getValueAt(index, 2).toString());
-        _textFields[3].setText(_table.getValueAt(index, 3).toString());
-        _textFields[4].setText(_table.getValueAt(index, 4).toString());
-        _textFields[5].setText(_table.getValueAt(index, 5).toString());
-        _textFields[6].setText(_table.getValueAt(index, 6).toString());
-        _textFields[7].setText(_table.getValueAt(index, 7).toString());
+        // Informations from all table columns
+        if (index >= 0)
+        {
+            for (int i = 0; i < _tableModel.getColumnCount(); i++)
+            {
+                _textFields[i].setText(_tableModel.getValueAt(index, i).toString());
+            }
+        }
+        // Other informations
+        // _textFields[0].setText(_table.getValueAt(index, 0).toString());
+        // ...
     }
 
     /**
