@@ -6,7 +6,7 @@ import java.util.Observable;
  *
  * @author Niesuch
  */
-class Download extends Observable implements Runnable
+class DownloadManager extends Observable implements Runnable
 {
 
     public static final String STATUSES[] =
@@ -25,7 +25,7 @@ class Download extends Observable implements Runnable
     private final int _downloadSpeed, _uploadSpeed;
     private final int _timeRemaining;
 
-    public Download(String name)
+    public DownloadManager(String name)
     {
         this._name = name;
         _size = -1;
@@ -146,11 +146,12 @@ class Download extends Observable implements Runnable
     }
 
     /**
-     * Function which support downloads
+     * Start or resume downloading
      */
     private void _download()
     {
-
+        Thread thread = new Thread(this);
+        thread.start();
     }
 
     /**

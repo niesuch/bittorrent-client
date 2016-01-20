@@ -80,7 +80,7 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
     @Override
     public Object getValueAt(int row, int col)
     {
-        Download download = (Download) _downloadList.get(row);
+        DownloadManager download = (DownloadManager) _downloadList.get(row);
         switch (col)
         {
             case 0: // Name
@@ -116,7 +116,7 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
      *
      * @param download
      */
-    public void addDownload(Download download)
+    public void addDownload(DownloadManager download)
     {
         download.addObserver(this);
         _downloadList.add(download);
@@ -129,9 +129,9 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
      * @param row
      * @return
      */
-    public Download getDownload(int row)
+    public DownloadManager getDownload(int row)
     {
-        return (Download) _downloadList.get(row);
+        return (DownloadManager) _downloadList.get(row);
     }
 
     /**
