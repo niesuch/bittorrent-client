@@ -1,4 +1,4 @@
-package Log;
+package Logger;
 
 import Config.Config;
 

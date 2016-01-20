@@ -1,5 +1,7 @@
+package Manager;
 
-import Log.Log;
+import Manager.DownloadManager;
+import Logger.Log;
 import TorrentMetadata.TorrentFile;
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +22,10 @@ public class Manager extends Thread
     private TorrentFile _torrentInfo;
     private File _outputFile;
     private static final Logger log = Log.getLogger(DownloadManager.class);
-    
-    public Manager() {
-        
+
+    public Manager()
+    {
+
     }
 
     /**

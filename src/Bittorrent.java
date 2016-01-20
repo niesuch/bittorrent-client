@@ -1,4 +1,8 @@
 
+import Manager.DownloadManager;
+import Utils.TableUtils.ProgressRenderer;
+import Utils.TableUtils.DownloadsTableModel;
+import Utils.TableUtils.ColumnKeeper;
 import Utils.Utils;
 import Config.Config;
 import java.awt.BorderLayout;

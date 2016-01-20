@@ -1,3 +1,4 @@
+package Manager;
 
 import java.util.Observable;
 
@@ -6,7 +7,7 @@ import java.util.Observable;
  *
  * @author Niesuch
  */
-class DownloadManager extends Observable implements Runnable
+public class DownloadManager extends Observable implements Runnable
 {
 
     public static final String STATUSES[] =

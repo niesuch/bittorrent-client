@@ -1,4 +1,6 @@
+package Utils.TableUtils;
 
+import Manager.DownloadManager;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -10,7 +12,7 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Niesuch
  */
-class DownloadsTableModel extends AbstractTableModel implements Observer
+public class DownloadsTableModel extends AbstractTableModel implements Observer
 {
 
     private static final String[] _columnNames =
