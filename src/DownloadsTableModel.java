@@ -43,6 +43,16 @@ class DownloadsTableModel extends AbstractTableModel implements Observer
         return _columnSizes;
     }
 
+    /**
+     * Return array with all columns names
+     *
+     * @return
+     */
+    public String[] getAllCollumns()
+    {
+        return _columnNames;
+    }
+
     @Override
     public int getColumnCount()
     {
