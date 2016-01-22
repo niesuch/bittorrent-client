@@ -1,6 +1,8 @@
 
 package BEncoding.BElement;
 
+import java.util.List;
+
 /**
  * Bencode integer.
  */
@@ -14,6 +16,12 @@ public class BInteger implements BElement, Comparable<BInteger>
     public BInteger(Integer val)
     {
         this.Value = val;
+    }
+    
+    public BInteger(long val)
+    {
+        //TODO
+        this.Value = new Integer((int)val);
     }
     
     /**
@@ -43,6 +51,18 @@ public class BInteger implements BElement, Comparable<BInteger>
     public int compareTo(BInteger o)
     {
         return this.Value.compareTo(o.Value);
+    }
+    
+    @Override
+    public String getString()
+    {
+        throw new RuntimeException("Type is BInteger, shouldnt it be BString??");
+    }
+    
+    @Override
+    public List<BElement> getList()
+    {
+        throw new RuntimeException("Type is BInteger, shouldnt it be BList??");
     }
     
     @Override

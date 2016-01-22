@@ -1,5 +1,8 @@
 package BEncoding.BElement;
 
+import java.util.List;
+
+
 /**
  * An interface for bencoded elements.
  */
@@ -17,4 +20,8 @@ public interface BElement
      * @return The bencoded equivalent of the element.
      */
     StringBuilder ToBencodedString(StringBuilder u);
+
+    public String getString();
+
+    public List<BElement> getList();
 }

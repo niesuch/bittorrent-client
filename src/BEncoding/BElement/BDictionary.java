@@ -5,6 +5,7 @@
  */
 package BEncoding.BElement;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -16,6 +17,16 @@ public class BDictionary implements BElement
 {
     public TreeMap<BString, BElement> Values = new TreeMap<BString, BElement>();
     
+    public BDictionary() {}
+        
+    public BDictionary(Map<String, BElement> vals)
+    { 
+        for (Map.Entry<String, BElement> entry : vals.entrySet())
+        {
+            Values.put(new BString(entry.getKey()), entry.getValue()) ;
+        }
+    }
+    
     /**
      * Generates the bencoded equivalent of the dictionary.
      * @return Bencoded equivalent of the dictionary.
@@ -23,7 +34,7 @@ public class BDictionary implements BElement
     @Override
     public String ToBencodedString()
     {
-            return this.ToBencodedString(new StringBuilder()).toString();
+        return this.ToBencodedString(new StringBuilder()).toString();
     }
 
     /**
@@ -53,7 +64,7 @@ public class BDictionary implements BElement
      */
     public void Add(BString key, BElement value)
     {
-            Values.put(key, value);
+        Values.put(key, value);
     }
     
     /**
@@ -63,7 +74,7 @@ public class BDictionary implements BElement
      */
     public void Add(String key, BElement value)
     {
-            Values.put(new BString(key), value);
+        Values.put(new BString(key), value);
     }
 
      /**
@@ -73,7 +84,7 @@ public class BDictionary implements BElement
      */
     public void Add(String key, String value)
     {
-            Values.put(new BString(key), new BString(value));
+        Values.put(new BString(key), new BString(value));
     }
 
      /**
@@ -83,7 +94,33 @@ public class BDictionary implements BElement
      */
     public void Add(String key, Integer value)
     {
-            Values.put(new BString(key), new BInteger(value));
+        Values.put(new BString(key), new BInteger(value));
+    }
+    
+        /**
+     * Converts Values to Map<String, BElement>
+     * @return new Map<String, BElement>
+     */
+    public Map<String, BElement> getMap()
+    {
+        Map<String, BElement> ret = new TreeMap<>();
+        
+        for (Map.Entry<BString, BElement> entry : Values.entrySet())
+        {
+            ret.put(entry.getKey().toString(), entry.getValue()) ;
+        }
+        return ret;
+    }
+    @Override
+    public String getString()
+    {
+        throw new RuntimeException("Type is BDictionary, shouldnt it be BString??");
+    }
+    
+    @Override
+    public List<BElement> getList()
+    {
+        throw new RuntimeException("Type is BInteger, shouldnt it be BList??");
     }
     
     @Override
