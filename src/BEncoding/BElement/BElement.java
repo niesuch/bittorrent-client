@@ -24,4 +24,6 @@ public interface BElement
     public String getString();
 
     public List<BElement> getList();
+
+    public int getInt();
 }

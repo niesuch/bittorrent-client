@@ -124,6 +124,12 @@ public class BDictionary implements BElement
     }
     
     @Override
+    public int getInt()
+    {
+         throw new RuntimeException("Type is BInteger, shouldnt it be BInteger??");
+    }
+    
+    @Override
     public String toString()
     {
         String s = "";

@@ -167,7 +167,7 @@ public class TorrentFile
         }
 
         this.creationDate = this.decodedFile.containsKey("creation date")
-                ? new Date(((BInteger)this.decodedFile.get("creation date")).Value * 1000)
+                ? new Date(this.decodedFile.get("creation date").getInt() * 1000)
                 : null;
         this.comment = this.decodedFile.containsKey("comment")
                 ? this.decodedFile.get("comment").getString()
@@ -434,6 +434,6 @@ public class TorrentFile
 	throws NoSuchAlgorithmException, InterruptedException, IOException 
     {
         //TODO
-        return null;
+        return "TorrentFile, filesToHash: not implemented";
     }
 }

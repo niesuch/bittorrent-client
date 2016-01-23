@@ -86,6 +86,13 @@ public class BList implements BElement
     {
         return Values;
     }
+    
+    @Override
+    public int getInt()
+    {
+         throw new RuntimeException("Type is BInteger, shouldnt it be BInteger??");
+    }
+    
     @Override
     public String toString()
     {

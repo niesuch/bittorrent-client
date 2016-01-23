@@ -61,6 +61,12 @@ public class BString implements BElement, Comparable<BString>
     }
     
     @Override
+    public int getInt()
+    {
+         throw new RuntimeException("Type is BInteger, shouldnt it be BInteger??");
+    }
+    
+    @Override
     public String toString()
     {
         return Value.toString();

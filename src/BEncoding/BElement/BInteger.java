@@ -66,6 +66,12 @@ public class BInteger implements BElement, Comparable<BInteger>
     }
     
     @Override
+    public int getInt()
+    {
+        return Value;
+    }
+    
+    @Override
     public String toString()
     {
         return Value.toString();
