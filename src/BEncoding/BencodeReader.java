@@ -88,6 +88,8 @@ public class BencodeReader
         }
         catch (Exception ex)
         { 
+            Integer IntMaxVal= Integer.MAX_VALUE;
+            long tmp = bencodedString.length();
             System.err.println("Caught Exception in BencodeReader, ReadDictionary: " + ex.getMessage());
             return null;  
         }

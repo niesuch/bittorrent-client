@@ -12,8 +12,15 @@ public class BList implements BElement
     /**
      * List of Bencode Elements.
      */
-    public List<BElement> Value = new ArrayList<BElement>();
+    public List<BElement> Values = new ArrayList<BElement>();
     
+    public BList() {}
+        
+    public BList(List<BElement> vals)
+    {
+        Values = vals;
+    }
+
     /**
      * Generates the bencoded equivalent of the list.
      * @return Bencoded equivalent of the list.
@@ -21,7 +28,7 @@ public class BList implements BElement
     @Override
     public String ToBencodedString()
     {
-            return this.ToBencodedString(new StringBuilder()).toString();
+        return this.ToBencodedString(new StringBuilder()).toString();
     }
     /**
      * Generates the bencoded equivalent of the list.
@@ -34,7 +41,7 @@ public class BList implements BElement
             if (u == null) u = new StringBuilder('l');
             else u.append('l');
 
-            for(BElement element : Value)
+            for(BElement element : Values)
             {
                     element.ToBencodedString(u);
             }
@@ -47,7 +54,7 @@ public class BList implements BElement
      */
     public void Add(BElement value)
     {
-            Value.add(value);
+            Values.add(value);
     }
     
     /**
@@ -56,7 +63,7 @@ public class BList implements BElement
      */
     public void Add(String value)
     {
-            Value.add(new BString(value));
+            Values.add(new BString(value));
     }
 
     /**
@@ -65,14 +72,38 @@ public class BList implements BElement
      */
     public void Add(Integer value)
     {
-            Value.add(new BInteger(value));
+            Values.add(new BInteger(value));
+    }
+    
+    @Override
+    public String getString()
+    {
+        throw new RuntimeException("Type is BList, shouldnt it be BString??");
+    }
+    
+    @Override
+    public List<BElement> getList()
+    {
+        return Values;
+    }
+    
+    @Override
+    public int getInt()
+    {
+         throw new RuntimeException("Type is BList, shouldnt it be BInteger??");
+    }
+    
+    @Override
+    public long getLong()
+    {
+         throw new RuntimeException("Type is BList, shouldnt it be BInteger??");
     }
     
     @Override
     public String toString()
     {
         String s = "";
-        for(BElement el: Value)
+        for(BElement el: Values)
         {
             s += el.toString() + " ";
         }

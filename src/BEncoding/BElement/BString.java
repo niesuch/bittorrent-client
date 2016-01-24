@@ -1,5 +1,7 @@
 package BEncoding.BElement;
 
+import java.util.List;
+
 /**
  * Bencode string.
  */
@@ -44,6 +46,30 @@ public class BString implements BElement, Comparable<BString>
     public int compareTo(BString o)
     {
         return this.Value.compareTo(o.Value);
+    }
+    
+    @Override
+    public String getString()
+    {
+        return Value;
+    }
+    
+    @Override
+    public List<BElement> getList()
+    {
+        throw new RuntimeException("Type is BString, shouldnt it be BList??");
+    }
+    
+    @Override
+    public int getInt()
+    {
+         throw new RuntimeException("Type is BString, shouldnt it be BInteger??");
+    }
+    
+    @Override
+    public long getLong()
+    {
+         throw new RuntimeException("Type is BString, shouldnt it be BInteger??");
     }
     
     @Override
