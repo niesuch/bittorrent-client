@@ -1,4 +1,8 @@
 
+import Manager.DownloadManager;
+import Utils.TableUtils.ProgressRenderer;
+import Utils.TableUtils.DownloadsTableModel;
+import Utils.TableUtils.ColumnKeeper;
 import Utils.Utils;
 import Config.Config;
 import java.awt.BorderLayout;
@@ -44,7 +48,7 @@ public class Bittorrent extends JFrame implements Observer
     private JButton _pauseButton, _resumeButton;
     private JButton _cancelButton, _deleteButton;
     private final JPanel _infoPanel, _downloadsPanel, _buttonsPanel;
-    private Download _selectedDownload;
+    private DownloadManager _selectedDownload;
     private final JTextField[] _textFields;
     private final String[] _formLabels =
     {
@@ -328,7 +332,7 @@ public class Bittorrent extends JFrame implements Observer
 
     private void _actionAdd(String str)
     {
-        _tableModel.addDownload(new Download(str));
+        _tableModel.addDownload(new DownloadManager(str));
     }
 
     /**
@@ -341,19 +345,19 @@ public class Bittorrent extends JFrame implements Observer
             int status = _selectedDownload.getStatus();
             switch (status)
             {
-                case Download.DOWNLOADING:
+                case DownloadManager.DOWNLOADING:
                     _pauseButton.setEnabled(true);
                     _resumeButton.setEnabled(false);
                     _cancelButton.setEnabled(true);
                     _deleteButton.setEnabled(true);
                     break;
-                case Download.PAUSED:
+                case DownloadManager.PAUSED:
                     _pauseButton.setEnabled(false);
                     _resumeButton.setEnabled(true);
                     _cancelButton.setEnabled(true);
                     _deleteButton.setEnabled(false);
                     break;
-                case Download.ERROR:
+                case DownloadManager.ERROR:
                     _pauseButton.setEnabled(false);
                     _resumeButton.setEnabled(true);
                     _cancelButton.setEnabled(false);

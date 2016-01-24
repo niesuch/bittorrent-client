@@ -1,3 +1,4 @@
+package Utils.TableUtils;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +14,7 @@ import javax.swing.table.TableColumnModel;
  *
  * @author Niesuch
  */
-class ColumnKeeper implements ActionListener
+public class ColumnKeeper implements ActionListener
 {
 
     private TableColumn _tColumn;
