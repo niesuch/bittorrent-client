@@ -140,7 +140,7 @@ public class TCPConnection {
             }
             try {
                 if ((this.iTotalBytesReceived = this.oClientChannel.read(getoReadBuffer())) == -1) {
-                    throw new SocketException("Connection closed prematurely");
+                    throw new SocketException("Connection has been closed prematurely");
                 }
             } catch (IOException ex) {
                 Logger.getLogger(TCPConnection.class.getName()).log(Level.SEVERE, null, ex);
