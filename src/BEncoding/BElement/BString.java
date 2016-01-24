@@ -57,13 +57,19 @@ public class BString implements BElement, Comparable<BString>
     @Override
     public List<BElement> getList()
     {
-        throw new RuntimeException("Type is BInteger, shouldnt it be BList??");
+        throw new RuntimeException("Type is BString, shouldnt it be BList??");
     }
     
     @Override
     public int getInt()
     {
-         throw new RuntimeException("Type is BInteger, shouldnt it be BInteger??");
+         throw new RuntimeException("Type is BString, shouldnt it be BInteger??");
+    }
+    
+    @Override
+    public long getLong()
+    {
+         throw new RuntimeException("Type is BString, shouldnt it be BInteger??");
     }
     
     @Override

@@ -21,16 +21,17 @@ public class TorrentFileTest
 {   
     public static void main(String [] args) throws IOException         
     { 
-        TorrentFile test = null;
+        TorrentFile loadSampleTorrent = null;
         
         //TODO make it universal, get the path of the project or smth
         //Test loading .torrent
         String torrent = "C:\\Users\\Robert\\Downloads\\sample.torrent";
         
+        //String torrent = "C:\\Users\\Robert\\Downloads\\[torrenty.pl] Deus Ex_ Revision _2015_ [ENG] [ALI213] [RAR].torrent";
         File torrentFile = new File(torrent);
         try
         {
-            test = TorrentFile.load(torrentFile);
+            loadSampleTorrent = TorrentFile.load(torrentFile);
         } 
         catch (IOException | NoSuchAlgorithmException ex)
         {
@@ -53,7 +54,7 @@ public class TorrentFileTest
                 file.createNewFile();
             }
 
-            test.save(fop);
+            loadSampleTorrent.save(fop);
             fop.flush();
             fop.close();
 
@@ -80,10 +81,12 @@ public class TorrentFileTest
         }
         
         //Test creating .torrent
+        File fileSample;
         File createTorrentFile;
         File fileTMP;
         TorrentFile testCreate = null;
         FileOutputStream fopTestCreate = null;
+        FileOutputStream fopSampleSaved = null;
         try
         {
             createTorrentFile = new File("C:\\Users\\Robert\\Downloads\\test.txt");
@@ -92,17 +95,29 @@ public class TorrentFileTest
             fileTMP = new File("C:\\Users\\Robert\\Downloads\\sampleCreate.torrent");
             fopTestCreate = new FileOutputStream(fileTMP);
             
+            //saving the loadd file to check if everything is correct
+            fileSample = new File("C:\\Users\\Robert\\Downloads\\sampleSaved.torrent");
+            fopSampleSaved= new FileOutputStream(fileSample);
+            
              // if file doesnt exists, then create it
             if (!fileTMP.exists()) 
             {
                 fileTMP.createNewFile();
             }
             
+                        // if file doesnt exists, then create it
+            if (!fileSample.exists()) 
+            {
+                fileSample.createNewFile();
+            }
+            
             testCreate.save(fopTestCreate);
+            System.out.println("Saving sample.torrent to "  + fileSample.getName() +" succesfull");
+            loadSampleTorrent.save(fopSampleSaved); //saving loaded .torrent
             fopTestCreate.flush();
             fopTestCreate.close();
 
-            System.out.println("Creating .torrent from test.txt succesfull");
+            System.out.println("Creating .torrent from test.txt to "+ fileTMP.getName() +" succesfull");
         }
         catch(Exception ex)
         {

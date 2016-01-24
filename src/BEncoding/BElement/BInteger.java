@@ -21,7 +21,7 @@ public class BInteger implements BElement, Comparable<BInteger>
     public BInteger(long val)
     {
         //TODO
-        this.Value = new Integer((int)val);
+        this.Value = (int)val;
     }
     
     /**
@@ -69,6 +69,12 @@ public class BInteger implements BElement, Comparable<BInteger>
     public int getInt()
     {
         return Value;
+    }
+    
+    @Override
+    public long getLong()
+    {
+        return (long)Value;
     }
     
     @Override

@@ -26,4 +26,6 @@ public interface BElement
     public List<BElement> getList();
 
     public int getInt();
+    
+    public long getLong();
 }

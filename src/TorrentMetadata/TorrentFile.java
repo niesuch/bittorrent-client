@@ -6,10 +6,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,6 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * 
@@ -97,7 +104,12 @@ public class TorrentFile
         this.encodedFile = torrentFileBytes;
         this.isSeeder = seeder;
 
-        String torrentString  = new String(torrentFileBytes, "UTF-8");
+        String torrentString  = new String(torrentFileBytes, "ISO-8859-1"/*"UTF-8"*/);
+        if(torrentString.length() != torrentFileBytes.length)
+        {
+            throw new RuntimeException("torrentString length is different from source byte array(torrentFileBytes) length");
+        }
+        
         BElement[] elements = BencodeReader.Decode(torrentString);
         BDictionary decoded = null;
         if(elements != null)
@@ -107,12 +119,10 @@ public class TorrentFile
         
           decodedFile = decoded.getMap();
         
-//        this.decoded = BDecoder.bdecode(new ByteArrayInputStream(this.encoded)).getMap();
-//
         this.decodedInfo = ((BDictionary)this.decodedFile.get("info")).getMap();
         
         encodedInfo =  ((BDictionary)this.decodedFile.get("info")).ToBencodedString();
-        this.infoHash = TorrentFile.hash(encodedInfo.getBytes(Charset.forName("UTF-8")));
+        this.infoHash = TorrentFile.hash(encodedInfo.getBytes(Charset.forName("ISO-8859-1"/*"UTF-8"*/)));
         this.hexInfoHash = TorrentFile.byteArrayToHex(this.infoHash);
         try 
         {
@@ -165,9 +175,9 @@ public class TorrentFile
         {
             throw new IOException(ex);
         }
-
+                
         this.creationDate = this.decodedFile.containsKey("creation date")
-                ? new Date(this.decodedFile.get("creation date").getInt() * 1000)
+                ? new Date((this.decodedFile.get("creation date").getLong()) * 1000)
                 : null;
         this.comment = this.decodedFile.containsKey("comment")
                 ? this.decodedFile.get("comment").getString()
@@ -262,7 +272,7 @@ public class TorrentFile
     * Save this {@link TorrentFile} object into a .torrent file.
     *
     * @param output The stream to write to.
-    * @throws IOException If an I/O error occurs while writing the file.
+    * @throws IOException
     */
    public void save(FileOutputStream output) throws IOException 
    {
@@ -283,12 +293,10 @@ public class TorrentFile
     }
 
     /**
-     * Load torrent from file.
+     * Load torrent from .torrent file.
      *
      * @param torrent
-     * @param seeder Whether we are a seeder for this torrent or not (disables
-     * local data validation).
-     * @return 
+     * @param seeder Whether we are a seeder for this torrent or not (disables local data validation).
      * @throws IOException When the torrent file cannot be read.
      * @throws NoSuchAlgorithmException
      */
@@ -310,99 +318,79 @@ public class TorrentFile
     }
     
     
-	/**
-	 * Create a {@link TorrentFile} object for a single file.
-	 *
-	 * Hash the given file to create the {@link TorrentFile} object representing
-	 * the Torrent metainfo about this file, needed for announcing and/or
-	 * sharing said file.
-	 *
-	 * @param source The file to use in the torrent.
-	 * @param announce The announce URI that will be used for this torrent.
-	 * @param createdBy The creator's name, or any string identifying the
-	 * torrent's creator.
-	 */
-	public static TorrentFile create(File source, URI announce, String createdBy)
-                throws NoSuchAlgorithmException, InterruptedException, IOException 
-        {
-            return TorrentFile.create(source, null, announce, createdBy);
-	}
-        
-        /**
-	 * Create a {@link TorrentFile} object for a multiple files.
-	 *
-	 * Hash the given files to create the multi-file {@link Torrent} object
-	 * representing the Torrent meta-info about them, needed for announcing
-	 * and/or sharing these files. Since we created the torrent, we're
-	 * considering we'll be a full initial seeder for it.
-	 *
-	 * @param parent The parent directory or location of the torrent files,
-	 * also used as the torrent's name.
-	 * @param files The files to add into this torrent.
-	 * @param announce The announce URI that will be used for this torrent.
-	 * @param createdBy The creator's name, or any string identifying the
-	 * torrent's creator.
-	 */
-	public static TorrentFile create(File parent, List<File> files, URI announce, String createdBy) 
+    /**
+     * Create a {@link TorrentFile} object for a single file.
+     */
+    public static TorrentFile create(File source, URI announce, String createdBy)
             throws NoSuchAlgorithmException, InterruptedException, IOException 
+    {
+        return TorrentFile.create(source, null, announce, createdBy);
+    }
+
+    /**
+     * Create a {@link TorrentFile} object for a multiple files.
+     */
+    public static TorrentFile create(File parent, List<File> files, URI announce, String createdBy) 
+        throws NoSuchAlgorithmException, InterruptedException, IOException 
+    {
+        if (files == null || files.isEmpty()) 
         {
-            if (files == null || files.isEmpty()) 
-            {
-                 //TODO make some kind of logging to file or smth
-                System.out.println("Creating single-file torrent for: " + parent.getName());
-            }
-            else 
-            {   
-                //TODO make some kind of logging to file or smth
-                System.out.println("Creating " + String.valueOf(files.size())+ " - file torrent " + parent.getName());
-            }
+             //TODO make some kind of logging to file or smth
+            System.out.println("Creating single-file torrent for: " + parent.getName());
+        }
+        else 
+        {   
+            //TODO make some kind of logging to file or smth
+            System.out.println("Creating " + String.valueOf(files.size())+ " - file torrent " + parent.getName());
+        }
 
-            Map<String, BElement> torrent = new HashMap<String, BElement>();
-            torrent.put("announce", new BString(announce.toString()));
-            torrent.put("creation date", new BInteger(new Date().getTime() / 1000));
-            torrent.put("created by", new BString(createdBy));
+        Map<String, BElement> torrent = new HashMap<String, BElement>();
+        torrent.put("announce", new BString(announce.toString()));
+        long temp = new Date().getTime() / 1000;
+        torrent.put("creation date", new BInteger(temp));
+        torrent.put("created by", new BString(createdBy));
 
-            Map<String, BElement> info = new TreeMap<String, BElement>();
-            info.put("name", new BString(parent.getName()));
-            info.put("piece length", new BInteger(TorrentFile.pieceLength));
+        Map<String, BElement> info = new TreeMap<String, BElement>();
+        info.put("name", new BString(parent.getName()));
+        info.put("piece length", new BInteger(TorrentFile.pieceLength));
 
-            if (files == null || files.isEmpty()) 
+        if (files == null || files.isEmpty()) 
+        {
+            info.put("length", new BInteger(parent.length()));
+            //TODO
+            info.put("pieces", new BString(TorrentFile.fileToHash(parent)));
+        } 
+        else 
+        {
+            List<BElement> fileInfo = new LinkedList<BElement>();
+            for (File file : files) 
             {
-                info.put("length", new BInteger(parent.length()));
-                //TODO
-                info.put("pieces", new BString(TorrentFile.fileToHash(parent)/*, TorrentFile.BYTE_ENCODING*/));
-            } 
-            else 
-            {
-                List<BElement> fileInfo = new LinkedList<BElement>();
-                for (File file : files) 
+                Map<String, BElement> fileMap = new HashMap<String, BElement>();
+                fileMap.put("length", new BInteger(file.length()));
+
+                List<BElement> filePath = new LinkedList<BElement>();
+                while (file != null) 
                 {
-                    Map<String, BElement> fileMap = new HashMap<String, BElement>();
-                    fileMap.put("length", new BInteger(file.length()));
+                        if (file.equals(parent))
+                        {
+                                break;
+                        }
 
-                    List<BElement> filePath = new LinkedList<BElement>();
-                    while (file != null) 
-                    {
-                            if (file.equals(parent))
-                            {
-                                    break;
-                            }
-
-                            filePath.add(new BString(file.getName()));
-                            file = file.getParentFile();
-                    }
-
-                    fileMap.put("path", new BList(filePath));
-                    fileInfo.add(new BDictionary(fileMap));
+                        filePath.add(new BString(file.getName()));
+                        file = file.getParentFile();
                 }
-                info.put("files", new BList(fileInfo));
-                info.put("pieces", new BString(TorrentFile.filesToHash(files)/*,TorrentFile.BYTE_ENCODING*/));
-            }
-            torrent.put("info", new BDictionary(info));
 
-            BDictionary b = new BDictionary(torrent);
-            return new TorrentFile(b.ToBencodedString().getBytes(Charset.forName("UTF-8")), true);
-	}
+                fileMap.put("path", new BList(filePath));
+                fileInfo.add(new BDictionary(fileMap));
+            }
+            info.put("files", new BList(fileInfo));
+            info.put("pieces", new BString(TorrentFile.filesToHash(files)));
+        }
+        torrent.put("info", new BDictionary(info));
+
+        BDictionary b = new BDictionary(torrent);
+        return new TorrentFile(b.ToBencodedString().getBytes(Charset.forName(/*"UTF-8"*/"ISO-8859-1")), true);
+    }
     
     public static byte[] hash(byte[] data) throws NoSuchAlgorithmException 
     {
@@ -414,26 +402,184 @@ public class TorrentFile
     /**
      * Convert a byte string to a string containing an hexadecimal
      * representation of the original data.
-     *
-     * @param bytes The byte array to convert.
-     * @return 
      */
     public static String byteArrayToHex(byte[] bytes)
     {
-            BigInteger bi = new BigInteger(1, bytes);
-            return String.format("%0" + (bytes.length << 1) + "X", bi);
+        BigInteger bi = new BigInteger(1, bytes);
+        return String.format("%0" + (bytes.length << 1) + "X", bi);
     }
     
+    /**
+     * A {@link Callable} to hash a data chunk.
+     */
+    private static class CallableChunkHasher implements Callable<String> 
+    {
+        private final MessageDigest md;
+        private final ByteBuffer data;
+
+        CallableChunkHasher(ByteBuffer buffer)
+                throws NoSuchAlgorithmException 
+        {
+            this.md = MessageDigest.getInstance("SHA-1");
+
+            this.data = ByteBuffer.allocate(buffer.remaining());
+            buffer.mark();
+            this.data.put(buffer);
+            this.data.clear();
+            buffer.reset();
+        }
+
+        @Override
+        public String call() throws UnsupportedEncodingException
+        {
+            this.md.reset();
+            this.md.update(this.data.array());
+            return new String(md.digest(), "ISO-8859-1");
+        }
+    }
+     
+    /**
+     * Accumulate the piece hashes into a given {@link StringBuilder}.
+     *
+     * @param hashes The {@link StringBuilder} to append hashes to.
+     * @param results The list of {@link Future}s that will yield the piece
+     *	hashes.
+     */
+    private static int accumulateHashes(StringBuilder hashes,List<Future<String>> results)
+        throws InterruptedException, IOException 
+    {
+        try 
+        {
+                int pieces = results.size();
+                for (Future<String> chunk : results) 
+                {
+                        hashes.append(chunk.get());
+                }
+                results.clear();
+                return pieces;
+        }
+        catch (ExecutionException ex) 
+        {
+            throw new IOException("Error while hashing the torrent data!", ex);
+        }
+    }
+    
+    /**
+     * Determine how many threads to use for the piece hashing.
+     *
+     * @return How many threads to use for concurrent piece hashing.
+     */
+    protected static int getHashingThreadsCount() 
+    {
+        String threads = System.getenv("TTORRENT_HASHING_THREADS");
+
+        if (threads != null) 
+        {
+            try 
+            {
+                int count = Integer.parseInt(threads);
+                if (count > 0)
+                {
+                    return count;
+                }
+            } 
+            catch (NumberFormatException ex)
+            {
+                // Pass
+            }
+        }
+
+        return Runtime.getRuntime().availableProcessors();
+    }
+        
     private static String fileToHash(File file)
 	throws NoSuchAlgorithmException, InterruptedException, IOException 
     {
 	return TorrentFile.filesToHash(Arrays.asList(new File[] { file }));
     }
-    
+            
     private static String filesToHash(List<File> files)
 	throws NoSuchAlgorithmException, InterruptedException, IOException 
     {
-        //TODO
-        return "TorrentFile, filesToHash: not implemented";
+        int threads = getHashingThreadsCount();
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        ByteBuffer buffer = ByteBuffer.allocate(TorrentFile.pieceLength);
+        List<Future<String>> results = new LinkedList<Future<String>>();
+        StringBuilder hashes = new StringBuilder();
+
+        long length = 0L;
+        int pieces = 0;
+
+        long start = System.nanoTime();
+        for (File file : files) 
+        {
+            int tmp = (int)(Math.ceil((double)file.length() / TorrentFile.pieceLength));
+            System.out.println("Hashing data from: " + file.getName() + String.valueOf(threads) + String.valueOf(tmp));
+
+            length += file.length();
+
+            FileInputStream fis = new FileInputStream(file);
+            FileChannel channel = fis.getChannel();
+            int step = 10;
+
+            try 
+            {
+                while (channel.read(buffer) > 0) 
+                {
+                    if (buffer.remaining() == 0) 
+                    {
+                        buffer.clear();
+                        results.add(executor.submit(new CallableChunkHasher(buffer)));
+                    }
+
+                    if (results.size() >= threads) 
+                    {
+                        pieces += accumulateHashes(hashes, results);
+                    }
+
+                    if (channel.position() / (double)channel.size() * 100f > step) 
+                    {
+                        System.out.println("  ... " + step + "% complete");
+                        step += 10;
+                    }
+                }
+            }
+            finally 
+            {
+                channel.close();
+                fis.close();
+            }
+        }
+
+        // Hash the last bit, if any
+        if (buffer.position() > 0) 
+        {
+            buffer.limit(buffer.position());
+            buffer.position(0);
+            results.add(executor.submit(new CallableChunkHasher(buffer)));
+        }
+
+        pieces += accumulateHashes(hashes, results);
+
+        // Request orderly executor shutdown and wait for hashing tasks to
+        // complete.
+        executor.shutdown();
+        while (!executor.isTerminated()) 
+        {
+            Thread.sleep(10);
+        }
+        long elapsed = System.nanoTime() - start;
+
+        int expectedPieces = (int) (Math.ceil((double)length / TorrentFile.pieceLength));
+        System.out.println
+        (
+            "Hashed " + String.valueOf(files.size()) + 
+            "file(s) (" + String.valueOf(length) +
+            " bytes) in " + String.valueOf(pieces) + 
+            " pieces (" + String.valueOf(expectedPieces) + 
+            " expected) in " + String.format("%.1f", elapsed/1e6) + "ms."
+        );
+
+        return hashes.toString();
     }
 }

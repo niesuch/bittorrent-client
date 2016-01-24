@@ -90,7 +90,13 @@ public class BList implements BElement
     @Override
     public int getInt()
     {
-         throw new RuntimeException("Type is BInteger, shouldnt it be BInteger??");
+         throw new RuntimeException("Type is BList, shouldnt it be BInteger??");
+    }
+    
+    @Override
+    public long getLong()
+    {
+         throw new RuntimeException("Type is BList, shouldnt it be BInteger??");
     }
     
     @Override
