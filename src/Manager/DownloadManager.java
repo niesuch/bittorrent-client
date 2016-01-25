@@ -20,16 +20,16 @@ public class DownloadManager extends Observable implements Runnable
     public static final int CANCELLED = 3;
     public static final int ERROR = 4;
     private final String _name;
-    private final int _size;
+    private final long _size;
     private final int _downloaded;
     private int _status;
     private final int _downloadSpeed, _uploadSpeed;
     private final int _timeRemaining;
 
-    public DownloadManager(String name)
+    public DownloadManager(String name, long size)
     {
         this._name = name;
-        _size = -1;
+        _size = size;
         _downloaded = 0;
         _status = DOWNLOADING;
         _downloadSpeed = 0;
@@ -44,7 +44,7 @@ public class DownloadManager extends Observable implements Runnable
      *
      * @return
      */
-    public int getSize()
+    public long getSize()
     {
         return _size;
     }

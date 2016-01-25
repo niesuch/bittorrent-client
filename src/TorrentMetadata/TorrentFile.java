@@ -85,6 +85,7 @@ public class TorrentFile
     private final byte[] infoHash;
     private final String hexInfoHash;
     
+       
     /**
      * Bencoded metadata info
      */
@@ -648,4 +649,13 @@ public class TorrentFile
 
         return hashes.toString();
     }
+    
+    /**
+     * Return get torrent size
+     * @return 
+     */
+    public long getTorrentSize() {
+        return size;
+    }
+    
 }
