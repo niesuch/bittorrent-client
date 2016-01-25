@@ -32,7 +32,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
- * 
+ * <p>
+ * This class keps torrent information is created from the byte array made from <tt>.torrent</tt>
+ * </p>
  * @author Robert
  */
 public class TorrentFile
@@ -59,8 +61,14 @@ public class TorrentFile
      */
     protected final byte[] encodedFile;
     
+    /**
+     * Here we store bencode decoded Dictionary
+     */
     protected final Map<String, BElement> decodedFile;
     
+    /**
+     *  Here we store bencode decoded Info Dictionary
+     */
     protected final Map<String, BElement> decodedInfo;
     
     /**
@@ -97,8 +105,18 @@ public class TorrentFile
         }
     };
     
+    /**
+     * List of files stored in .torrent
+     */
     protected final List<TFile> files;
     
+    /**
+     * 
+     * @param torrentFileBytes byte Array of the loaded file
+     * @param seeder Flag determinating if we are seeder or not
+     * @throws IOException
+     * @throws NoSuchAlgorithmException 
+     */
     public TorrentFile(byte[] torrentFileBytes, boolean seeder) throws IOException, NoSuchAlgorithmException 
     {
         this.encodedFile = torrentFileBytes;
@@ -320,6 +338,13 @@ public class TorrentFile
     
     /**
      * Create a {@link TorrentFile} object for a single file.
+     * @param source Source File
+     * @param announce Announce
+     * @param createdBy Info about who created the torrent, its going to be put in .torrent informations
+     * @return new TorrentFile created from given File
+     * @throws NoSuchAlgorithmException
+     * @throws InterruptedException
+     * @throws IOException 
      */
     public static TorrentFile create(File source, URI announce, String createdBy)
             throws NoSuchAlgorithmException, InterruptedException, IOException 
@@ -328,7 +353,17 @@ public class TorrentFile
     }
 
     /**
+     *
      * Create a {@link TorrentFile} object for a multiple files.
+     *
+     * @param parent  
+     * @param files List of Files if its multifile .torrent
+     * @param announce announce of the .torrent
+     * @param createdBy Info about who created the torrent, its going to be put in .torrent informations
+     * @return new TorrentFile created from given Files
+     * @throws NoSuchAlgorithmException
+     * @throws InterruptedException
+     * @throws IOException 
      */
     public static TorrentFile create(File parent, List<File> files, URI announce, String createdBy) 
         throws NoSuchAlgorithmException, InterruptedException, IOException 
@@ -392,6 +427,14 @@ public class TorrentFile
         return new TorrentFile(b.ToBencodedString().getBytes(Charset.forName(/*"UTF-8"*/"ISO-8859-1")), true);
     }
     
+    /**
+     * 
+     * Hashes given data.
+     * 
+     * @param data Data thats going to be hashed. Algorithm: SHA-1.
+     * @return Hashed data.
+     * @throws NoSuchAlgorithmException 
+     */
     public static byte[] hash(byte[] data) throws NoSuchAlgorithmException 
     {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
@@ -400,8 +443,11 @@ public class TorrentFile
     }
 
     /**
+     * 
      * Convert a byte string to a string containing an hexadecimal
      * representation of the original data.
+     * @param bytes 
+     * @return Hex String
      */
     public static String byteArrayToHex(byte[] bytes)
     {
@@ -410,7 +456,7 @@ public class TorrentFile
     }
     
     /**
-     * A {@link Callable} to hash a data chunk.
+     *  A {@link Callable} to hash a data chunk.
      */
     private static class CallableChunkHasher implements Callable<String> 
     {
@@ -465,7 +511,7 @@ public class TorrentFile
     }
     
     /**
-     * Determine how many threads to use for the piece hashing.
+     * Get information about how many threads to use for the piece hashing.
      *
      * @return How many threads to use for concurrent piece hashing.
      */
@@ -492,12 +538,32 @@ public class TorrentFile
         return Runtime.getRuntime().availableProcessors();
     }
         
+    /**
+     * 
+     * Hashes single File.
+     * 
+     * @param file File that going to be hashed
+     * @return Hashes String
+     * @throws NoSuchAlgorithmException
+     * @throws InterruptedException
+     * @throws IOException 
+     */
     private static String fileToHash(File file)
 	throws NoSuchAlgorithmException, InterruptedException, IOException 
     {
 	return TorrentFile.filesToHash(Arrays.asList(new File[] { file }));
     }
             
+    /**
+     * 
+     * Hashes multiple files.
+     * 
+     * @param files Files that are going to be hashed
+     * @return
+     * @throws NoSuchAlgorithmException
+     * @throws InterruptedException
+     * @throws IOException 
+     */
     private static String filesToHash(List<File> files)
 	throws NoSuchAlgorithmException, InterruptedException, IOException 
     {

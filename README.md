@@ -7,6 +7,7 @@
 1. [Description](https://github.com/niesuch/bittorrentclient/blob/master/README.md#description)
 2. [About program](https://github.com/niesuch/bittorrentclient/blob/master/README.md#about-program)
 	* [Layout](https://github.com/niesuch/bittorrentclient/blob/master/README.md#layout)
+	* [Torrent Files](https://github.com/niesuch/bittorrentclient/blob/master/README.md#.torrent)
 3. [Design Assumptions](https://github.com/niesuch/bittorrentclient/blob/master/README.md#desing-assumptions)
 4. [Links](https://github.com/niesuch/bittorrentclient/blob/master/README.md#links)
 5. [Installation](https://github.com/niesuch/bittorrentclient/blob/master/README.md#installation)
@@ -45,6 +46,15 @@ Layout consists of the functionalities, such as:
 <b>Screenshot:</b>
 
 ![Alt text](/docs/screenshots/layout.jpg)
+
+#### .torrent files
+Functionalities:
+ - Creating .torrent meta data from single files.
+ - Loading an existing .torrent
+ - Saving loaded .torrent file
+More information ca be found:
+ //TODO add link to javadoc
+
 
 ## Design Assumptions
 1. Using camelCase.
