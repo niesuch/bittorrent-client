@@ -6,9 +6,9 @@
 ## Table of Contents
 1. [Description](https://github.com/niesuch/bittorrentclient/blob/master/README.md#description)
 2. [About program](https://github.com/niesuch/bittorrentclient/blob/master/README.md#about-program)
-	* [Layout](https://github.com/niesuch/bittorrentclient/blob/master/README.md#torrent-file)
+	* [Layout](https://github.com/niesuch/bittorrentclient/blob/master/README.md#layout)
 	* [Sockets and TCP/IP connection] (https://github.com/niesuch/bittorrentclient/blob/master/README.md#sockets-and-tcpip-connection)
-	* [Torrent File](https://github.com/niesuch/bittorrentclient/blob/master/README.md#TorrentFile)
+	* [Torrent File] (https://github.com/niesuch/bittorrentclient/blob/master/README.md#torrent-file)
 3. [Design Assumptions](https://github.com/niesuch/bittorrentclient/blob/master/README.md#desing-assumptions)
 4. [Links](https://github.com/niesuch/bittorrentclient/blob/master/README.md#links)
 5. [Installation](https://github.com/niesuch/bittorrentclient/blob/master/README.md#installation)
