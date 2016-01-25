@@ -1,3 +1,4 @@
+package Utils.TableUtils;
 
 import java.awt.Component;
 import javax.swing.JProgressBar;
@@ -9,7 +10,7 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author Niesuch
  */
-class ProgressRenderer extends JProgressBar implements TableCellRenderer
+public class ProgressRenderer extends JProgressBar implements TableCellRenderer
 {
 
     public ProgressRenderer(int min, int max)
