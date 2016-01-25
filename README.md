@@ -7,7 +7,7 @@
 1. [Description](https://github.com/niesuch/bittorrentclient/blob/master/README.md#description)
 2. [About program](https://github.com/niesuch/bittorrentclient/blob/master/README.md#about-program)
 	* [Layout](https://github.com/niesuch/bittorrentclient/blob/master/README.md#layout)
-	* [Torrent Files](https://github.com/niesuch/bittorrentclient/blob/master/README.md#.torrent)
+	* [Torrent File](https://github.com/niesuch/bittorrentclient/blob/master/README.md#TorrentFile)
 3. [Design Assumptions](https://github.com/niesuch/bittorrentclient/blob/master/README.md#desing-assumptions)
 4. [Links](https://github.com/niesuch/bittorrentclient/blob/master/README.md#links)
 5. [Installation](https://github.com/niesuch/bittorrentclient/blob/master/README.md#installation)
@@ -47,8 +47,7 @@ Layout consists of the functionalities, such as:
 
 ![Alt text](/docs/screenshots/layout.jpg)
 
-<<<<<<< HEAD
-#### .torrent files
+#### TorrentFile
 Functionalities:
  - Creating .torrent meta data from single files.
  - Loading an existing .torrent
