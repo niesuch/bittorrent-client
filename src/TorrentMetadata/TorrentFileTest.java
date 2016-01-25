@@ -116,6 +116,8 @@ public class TorrentFileTest
             loadSampleTorrent.save(fopSampleSaved); //saving loaded .torrent
             fopTestCreate.flush();
             fopTestCreate.close();
+            fopSampleSaved.flush();
+            fopSampleSaved.close();
 
             System.out.println("Creating .torrent from test.txt to "+ fileTMP.getName() +" succesfull");
         }
