@@ -54,7 +54,7 @@ Functionalities:
  - Loading an existing .torrent
  - Saving loaded .torrent file
 More information ca be found:
- //TODO add link to javadoc
+[JavaDoc](https://github.com/niesuch/bittorrentclient/tree/master/docs/javadoc)
 
 =======
 #### Sockets and TCP/IP connection
