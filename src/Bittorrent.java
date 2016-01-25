@@ -5,6 +5,7 @@ import Utils.TableUtils.DownloadsTableModel;
 import Utils.TableUtils.ColumnKeeper;
 import Utils.Utils;
 import Config.Config;
+import TorrentMetadata.TorrentFile;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -12,8 +13,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -23,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -168,7 +178,73 @@ public class Bittorrent extends JFrame implements Observer
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Utils.openFileChooser();
+                TorrentFile openedTorrent = null;
+                String torrent = Utils.openFileChooser();
+                File torrentFile = new File(torrent);
+                try
+                {
+                    openedTorrent = TorrentFile.load(torrentFile);
+                    String msg = "<html>File <span style='color:green'>" + torrentFile.getName() + "</span> opened succesfully</html>";
+                    JOptionPane.showMessageDialog(null, msg, "Torrent Load", JOptionPane.INFORMATION_MESSAGE);
+                }   
+                catch (IOException | NoSuchAlgorithmException ex) 
+                {
+                    String s = "<html> Failed to open <span style='color:red'>" + torrentFile.getName() +"</span> </html>";
+                    JOptionPane.showMessageDialog(null, s, "Torrent Load Failure", JOptionPane.ERROR_MESSAGE);
+                    Logger.getLogger(Bittorrent.class.getName()).log(Level.SEVERE, null, ex);
+                } 
+            }
+        });
+        
+        JMenuItem torrentCreateMenuItem = new JMenuItem("Create new torrent from file", KeyEvent.VK_X);
+
+        torrentCreateMenuItem.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                URI testAnnounce = null;
+                String loadedFile = Utils.openFileChooser();
+                File createTorrentFile = new File(loadedFile);
+                TorrentFile createdTorrent = null;
+                File newFile = null;
+                FileOutputStream fopNewFile = null;
+                String savingName = loadedFile;
+                
+                int spaceIndex = savingName.indexOf(".");
+                if (spaceIndex != -1)
+                {
+                    savingName = savingName.substring(0, spaceIndex);
+                }
+                
+                savingName += "(createdTorrent).torrent";
+                try
+                {
+                    testAnnounce = new URI("udp://tracker.openbittorrent.com");
+                    createdTorrent = TorrentFile.create(createTorrentFile,testAnnounce , "robert");
+
+                    newFile = new File(savingName);
+                    fopNewFile = new FileOutputStream(newFile);
+                    
+                    // if file doesnt exists, then create it
+                    if (!newFile.exists()) 
+                    {
+                        newFile.createNewFile();
+                    }
+                    
+                    createdTorrent.save(fopNewFile);
+                    String msg = "<html>Saving <span style='color:green'>" + createTorrentFile.getName() + "</span> to <span style='color:green'>"  + newFile.getPath() + "</span> succesfull</html>";
+                    JOptionPane.showMessageDialog(null, msg, "Creating new .torrent", JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println(msg);
+                    fopNewFile.flush();
+                    fopNewFile.close();
+                } 
+                catch (URISyntaxException | NoSuchAlgorithmException | InterruptedException | IOException ex)
+                {
+                    String s = "<html> Creating torrent from <span style='color:red'>" + createTorrentFile.getName() +"</span> FAILED </html>";
+                    JOptionPane.showMessageDialog(null, s, "Create Torrent Failed", JOptionPane.ERROR_MESSAGE);
+                    Logger.getLogger(Bittorrent.class.getName()).log(Level.SEVERE, null, ex);
+                } 
             }
         });
 
@@ -215,6 +291,7 @@ public class Bittorrent extends JFrame implements Observer
         fileMenu.setMnemonic(KeyEvent.VK_F);
 
         fileMenu.add(fileOpenMenuItem);
+        fileMenu.add(torrentCreateMenuItem);
         fileMenu.add(fileExitMenuItem);
         helpMenu.add(helpAboutMenuItem);
 

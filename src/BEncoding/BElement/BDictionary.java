@@ -98,8 +98,8 @@ public class BDictionary implements BElement
     }
     
         /**
-     * Converts Values to Map<String, BElement>
-     * @return new Map<String, BElement>
+     * Converts Values to {@literal Map <String, BElement>}
+     * @return new {@literal Map<String, BElement>}
      */
     public Map<String, BElement> getMap()
     {
