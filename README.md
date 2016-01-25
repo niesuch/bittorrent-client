@@ -53,6 +53,7 @@ Functionalities:
  - Creating .torrent meta data from single files.
  - Loading an existing .torrent
  - Saving loaded .torrent file
+ 
 More information ca be found:
 [JavaDoc](https://github.com/niesuch/bittorrentclient/tree/master/docs/javadoc)
 
