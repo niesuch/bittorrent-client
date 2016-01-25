@@ -6,7 +6,8 @@
 ## Table of Contents
 1. [Description](https://github.com/niesuch/bittorrentclient/blob/master/README.md#description)
 2. [About program](https://github.com/niesuch/bittorrentclient/blob/master/README.md#about-program)
-	* [Layout](https://github.com/niesuch/bittorrentclient/blob/master/README.md#layout)
+	* [Layout](https://github.com/niesuch/bittorrentclient/blob/master/README.md#torrent-file)
+	* [Sockets and TCP/IP connection] (https://github.com/niesuch/bittorrentclient/blob/master/README.md#sockets-and-tcpip-connection)
 	* [Torrent File](https://github.com/niesuch/bittorrentclient/blob/master/README.md#TorrentFile)
 3. [Design Assumptions](https://github.com/niesuch/bittorrentclient/blob/master/README.md#desing-assumptions)
 4. [Links](https://github.com/niesuch/bittorrentclient/blob/master/README.md#links)
@@ -47,7 +48,7 @@ Layout consists of the functionalities, such as:
 
 ![Alt text](/docs/screenshots/layout.jpg)
 
-#### TorrentFile
+#### Torrent File
 Functionalities:
  - Creating .torrent meta data from single files.
  - Loading an existing .torrent
@@ -61,7 +62,6 @@ More information ca be found:
 * TCPProtocol - interface which contains three methods and calls the appropriate one.
 * TCPEchoSelectorProtocol - class which allows to accept connection, read from channel and write to channel.
 * TCPServerSelector - class which allows to create multiplex listening sockets and connections, it's creating socket channel for each port.
->>>>>>> origin/master
 
 ## Design Assumptions
 1. Using camelCase.
