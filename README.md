@@ -46,6 +46,12 @@ Layout consists of the functionalities, such as:
 
 ![Alt text](/docs/screenshots/layout.jpg)
 
+#### Sockets and TCP/IP connection
+* TCPConnection - class which allows to connect to the custom server and read/write/receive data.
+* TCPProtocol - interface which contains three methods and calls the appropriate one.
+* TCPEchoSelectorProtocol - class which allows to accept connection, read from channel and write to channel.
+* TCPServerSelector - class which allows to create multiplex listening sockets and connections, it's creating socket channel for each port.
+
 ## Design Assumptions
 1. Using camelCase.
 2. Brackets ({ }) adding in next line.
