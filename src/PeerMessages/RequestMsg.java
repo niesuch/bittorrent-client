@@ -25,7 +25,7 @@ public class RequestMsg extends Messages {
         this.length = length;
     }
 
-    private static Messages readRequest(DataInputStream in) throws IOException {
+    static Messages readRequest(DataInputStream in) throws IOException {
 
         int index = in.readInt();
         int begin = in.readInt();

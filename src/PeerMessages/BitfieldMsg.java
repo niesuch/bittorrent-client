@@ -21,7 +21,7 @@ public class BitfieldMsg extends Messages {
         this.bytefield = bytefield;
     }
 
-    private static Messages readBitfield(DataInputStream in, int length)
+    static Messages readBitfield(DataInputStream in, int length)
             throws IOException {
 
         byte[] bytefield = new byte[length - 1];
