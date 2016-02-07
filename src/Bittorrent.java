@@ -101,12 +101,6 @@ public class Bittorrent extends JFrame implements Observer
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(_buttonsPanel, BorderLayout.SOUTH);
         getContentPane().add(splitPane, BorderLayout.CENTER);
-
-        // Test adding row
-        _actionAdd("Test 1");
-        _actionAdd("Test 2");
-        _actionAdd("Test 3");
-        _actionAdd("Test 4");
     }
 
     /**
@@ -184,8 +178,9 @@ public class Bittorrent extends JFrame implements Observer
                 try
                 {
                     openedTorrent = TorrentFile.load(torrentFile);
-                    String msg = "<html>File <span style='color:green'>" + torrentFile.getName() + "</span> opened succesfully</html>";
-                    JOptionPane.showMessageDialog(null, msg, "Torrent Load", JOptionPane.INFORMATION_MESSAGE);
+//                    String msg = "<html>File <span style='color:green'>" + torrentFile.getName() + "</span> opened succesfully</html>";
+//                    JOptionPane.showMessageDialog(null, msg, "Torrent Load", JOptionPane.INFORMATION_MESSAGE);
+                    _actionAdd(openedTorrent.fileName, openedTorrent.getTorrentSize());
                 }   
                 catch (IOException | NoSuchAlgorithmException ex) 
                 {
@@ -407,9 +402,9 @@ public class Bittorrent extends JFrame implements Observer
         updateButtons();
     }
 
-    private void _actionAdd(String str)
+    private void _actionAdd(String torrentName, long size)
     {
-        _tableModel.addDownload(new DownloadManager(str));
+        _tableModel.addDownload(new DownloadManager(torrentName, size));
     }
 
     /**
