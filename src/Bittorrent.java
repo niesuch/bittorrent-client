@@ -5,6 +5,9 @@ import Utils.TableUtils.DownloadsTableModel;
 import Utils.TableUtils.ColumnKeeper;
 import Utils.Utils;
 import Config.Config;
+import Sockets.TCPConnection;
+import Sockets.TCPEchoSelectorProtocol;
+import Sockets.TCPServerSelector;
 import TorrentMetadata.TorrentFile;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -181,6 +184,7 @@ public class Bittorrent extends JFrame implements Observer
 //                    String msg = "<html>File <span style='color:green'>" + torrentFile.getName() + "</span> opened succesfully</html>";
 //                    JOptionPane.showMessageDialog(null, msg, "Torrent Load", JOptionPane.INFORMATION_MESSAGE);
                     _actionAdd(openedTorrent.fileName, openedTorrent.getTorrentSize());
+					TCPConnection oTCPConnection =new TCPConnection("127.0.0.1", 1337);
                 }   
                 catch (IOException | NoSuchAlgorithmException ex) 
                 {

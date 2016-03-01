@@ -1,13 +1,16 @@
 package Sockets;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 /**
  *
  * @author Lukasz
@@ -32,9 +35,9 @@ public class TCPConnection {
 
     public void init() {
         openChannel();
-        readOrWriteArguments();
-        sentAndReceiveAllBytes();
-        closeConnection();
+        //readOrWriteArguments();
+        //sentAndReceiveAllBytes();
+        //closeConnection();
     }
 
     public String getsServerName() {
@@ -111,16 +114,18 @@ public class TCPConnection {
         }
     }
 
-    private void initializeServerConnection() {
-        try {
-            if (!this.oClientChannel.connect(new InetSocketAddress(getsServerName(), getiServerPort()))) {
-                while (!this.oClientChannel.finishConnect()) {
-                    System.out.print("Connection test"); // Do something else
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(TCPConnection.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void initializeServerConnection() throws IOException {
+        try{
+         InetAddress oAddress;
+
+         Socket oSocket = new Socket(getsServerName(), getiServerPort());
+         oAddress = oSocket.getInetAddress();
+         System.out.println("Connected to " + oAddress);
+         oSocket.close();
+      } catch (java.io.IOException e) {
+         System.out.println("Can't connect to " );
+         System.out.println(e);
+      }
     }
 
     private void readOrWriteArguments() {
