@@ -10,10 +10,9 @@
 	* [Sockets and TCP/IP connection](https://github.com/niesuch/bittorrentclient/blob/master/README.md#sockets-and-tcpip-connection)
 	* [Torrent File](https://github.com/niesuch/bittorrentclient/blob/master/README.md#torrent-file)
 3. [Design Assumptions](https://github.com/niesuch/bittorrentclient/blob/master/README.md#desing-assumptions)
-4. [Links](https://github.com/niesuch/bittorrentclient/blob/master/README.md#links)
-5. [Installation](https://github.com/niesuch/bittorrentclient/blob/master/README.md#installation)
-6. [Changelogs](https://github.com/niesuch/bittorrentclient/blob/master/README.md#changelogs)
-7. [Copyright and license](https://github.com/niesuch/bittorrentclient/blob/master/README.md#copyright-and-license)
+4. [Installation](https://github.com/niesuch/bittorrentclient/blob/master/README.md#installation)
+5. [Changelogs](https://github.com/niesuch/bittorrentclient/blob/master/README.md#changelogs)
+6. [Copyright and license](https://github.com/niesuch/bittorrentclient/blob/master/README.md#copyright-and-license)
 
 ## Description
 Bittorrentclient is a program which use to download torrents. BitTorrent is a communications protocol for the practice of peer-to-peer file sharing that is used to distribute large amounts of data over the Internet.
@@ -74,8 +73,6 @@ More information can be found:
 8. Private variables and private methods preceding "_".
 9. Taking care of formatting code.
 10. Adding comments in difficult functions.
-
-## Links
 
 ## Installation
 Bittorrentclient doesn't require installation. To use program you must have Java in version JRE 7+ and any operating system. So you can compile the code and enjoy it.
